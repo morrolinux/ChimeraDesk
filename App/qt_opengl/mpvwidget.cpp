@@ -25,6 +25,19 @@ MpvWidget::MpvWidget(QWidget *parent, Qt::WindowFlags f)
 
     mpv_set_option_string(mpv, "terminal", "yes");
     mpv_set_option_string(mpv, "msg-level", "all=v");
+    mpv_set_option_string(mpv, "audio-buffer", "0");
+    mpv_set_option_string(mpv, "vd-lavc-threads", "1");
+    mpv_set_option_string(mpv, "cache-pause", "no");
+    mpv_set_option_string(mpv, "demuxer-lavf-o-add", "fflags=+nobuffer");
+    mpv_set_option_string(mpv, "demuxer-lavf-probe-info", "nostreams");
+    mpv_set_option_string(mpv, "emuxer-lavf-analyzeduration", "0.1");
+    mpv_set_option_string(mpv, "interpolation", "no");
+    mpv_set_option_string(mpv, "video-latency-hacks", "yes");
+    mpv_set_option_string(mpv, "stream-buffer-size", "4k");
+    int val = 1;
+    mpv_set_option(mpv, "no-cache", MPV_FORMAT_FLAG, &val);
+    mpv_set_option(mpv, "untimed", MPV_FORMAT_FLAG, &val);
+    
     if (mpv_initialize(mpv) < 0)
         throw std::runtime_error("could not initialize mpv context");
 
