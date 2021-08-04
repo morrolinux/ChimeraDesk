@@ -167,8 +167,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
   else if (event->type() == QEvent::Wheel)
   {
     QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
-    int dx = (-1 * -wheelEvent->angleDelta().x())/(wheelEvent->angleDelta().x() * -1); // preserve sign, turn into +1 or -1
-    int dy = (-1 * -wheelEvent->angleDelta().y())/(wheelEvent->angleDelta().y() * -1); // preserve sign, turn into +1 or -1
+    int dx = (wheelEvent->angleDelta().x() < 0) ? -1 : (wheelEvent->angleDelta().x() > 0) ? 1 : 0;
+    int dy = (wheelEvent->angleDelta().y() < 0) ? -1 : (wheelEvent->angleDelta().y() > 0) ? 1 : 0;
     QString msg = QString("mouse %1 %2 scroll %3 %4")
       .arg(wheelEvent->pos().x())
       .arg(wheelEvent->pos().y())
