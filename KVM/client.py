@@ -9,20 +9,39 @@ HOST = '127.0.0.1'
 PORT = 12346 
 
 special_codes = {
-        32: 'Key.space',
-        16777216: 'Key.esc',
-        16777217: 'Key.tab',
-        16777219: 'Key.backspace',
-        16777220: 'Key.enter',
-        16777234: 'Key.left',
-        16777235: 'Key.up',
-        16777236: 'Key.right',
-        16777237: 'Key.down',
-        16777248: 'Key.shift_l',
-        16777249: 'Key.ctrl_l',
-        16777299: 'Key.cmd_l',
-        16777251: 'Key.alt_l',
-        16781571: 'Key.alt_r'
+        32: Key.space,
+        16777216: Key.esc,
+        16777217: Key.tab,
+        16777219: Key.backspace,
+        16777220: Key.enter,
+        16777234: Key.left,
+        16777235: Key.up,
+        16777236: Key.right,
+        16777237: Key.down,
+        16777248: Key.shift_l,
+        16777249: Key.ctrl_l,
+        16777299: Key.cmd_l,
+        16777251: Key.alt_l,
+        16781571: Key.alt_r,
+        16777238: Key.page_up,
+        16777239: Key.page_down,
+        16777223: Key.delete,
+        16777232: Key.home,
+        16777233: Key.end,
+        16777301: Key.menu,
+        16777252: Key.caps_lock,
+        16777264: Key.f1,
+        16777265: Key.f2,
+        16777266: Key.f3,
+        16777267: Key.f4,
+        16777268: Key.f5,
+        16777269: Key.f6,
+        16777270: Key.f7,
+        16777271: Key.f8,
+        16777272: Key.f9,
+        16777273: Key.f10,
+        16777274: Key.f11,
+        16777275: Key.f12
         }
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -53,26 +72,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
         elif data[0] == 'keyboard':
 
-            if int(data[2]) in special_codes.keys():
-                exec("keyboard." + data[1] + "(" + data[2] + ")")
+            if data[1] == 'press':
+                action = keyboard.press
             else:
-                exec("keyboard." + data[1] + "(\'" + data[3] + "\')")
+                action = keyboard.release
 
-            # if data[1] == 'press':
-            #     # print("press", data[2])
-            #     try:
-            #         if len(data[2]) < 3:
-            #             keyboard.press(pynput.keyboard.KeyCode.from_vk(int(data[2])))
-            #         else:
-            #             exec("keyboard.press(" + data[2] + ")")
-            #     except Exception as e:
-            #         print(e)
-            # elif data[1] == 'release':
-            #     # print("release", data[2])
-            #     try:
-            #         if len(data[2]) < 3:
-            #             keyboard.release(pynput.keyboard.KeyCode.from_vk(int(data[2])))
-            #         else:
-            #             exec("keyboard.release(" + data[2] + ")")
-            #     except Exception as e:
-            #         print(e)
+            try:
+                if int(data[2]) in special_codes:
+                    action(special_codes[int(data[2])])
+                else:
+                    action(pynput.keyboard.KeyCode.from_vk(int(data[2])))
+            except Exception as e:
+                print("ERROR:", e)
+
