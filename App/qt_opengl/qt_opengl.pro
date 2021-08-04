@@ -1,5 +1,5 @@
 CONFIG -= app_bundle
-QT += widgets
+QT += widgets network
 
 QT_CONFIG -= no-pkg-config
 CONFIG += link_pkgconfig debug

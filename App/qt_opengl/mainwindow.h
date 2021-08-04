@@ -3,6 +3,8 @@
 
 #include <QtWidgets/QWidget>
 #include <QEvent>
+#include <QTcpServer>
+#include <QTcpSocket>
 
 class MpvWidget;
 class QSlider;
@@ -14,12 +16,17 @@ public:
     explicit MainWindow(QWidget *parent = 0);
 public Q_SLOTS:
     bool eventFilter(QObject *obj, QEvent *event);
+public slots:
+    void onNewConnection();
+    void onSocketStateChanged(QAbstractSocket::SocketState socketState);
+    void onReadyRead();
 private Q_SLOTS:
 private:
+    bool sendMessage(QString msg);
+    QString buttonName(int num);
     MpvWidget *m_mpv;
-    QSlider *m_slider;
-    QPushButton *m_openBtn;
-    QPushButton *m_playBtn;
+    QTcpServer  _server;
+    QList<QTcpSocket*>  _sockets;
 };
 
 #endif // MainWindow_H
