@@ -3,6 +3,7 @@
 import socket
 from pynput.mouse import Button, Controller as mouseController
 from pynput.keyboard import Key, Controller as kbdController
+import pynput
 
 HOST = '127.0.0.1' 
 PORT = 12346 
@@ -32,8 +33,24 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 mouse.scroll(int(data[4]), int(data[5]))
             elif data[3] == 'move':
                 pass # mouse.move(int(data[1]), int(data[2]))
+
         elif data[0] == 'keyboard':
+
             if data[1] == 'press':
-                exec("keyboard.press(" + data[2] + ")")
+                # print("press", data[2])
+                try:
+                    if len(data[2]) < 3:
+                        keyboard.press(pynput.keyboard.KeyCode.from_vk(int(data[2])))
+                    else:
+                        exec("keyboard.press(" + data[2] + ")")
+                except Exception as e:
+                    print(e)
             elif data[1] == 'release':
-                exec("keyboard.release(" + data[2] + ")")
+                # print("release", data[2])
+                try:
+                    if len(data[2]) < 3:
+                        keyboard.release(pynput.keyboard.KeyCode.from_vk(int(data[2])))
+                    else:
+                        exec("keyboard.release(" + data[2] + ")")
+                except Exception as e:
+                    print(e)
