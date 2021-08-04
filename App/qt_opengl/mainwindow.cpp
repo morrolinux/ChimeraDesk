@@ -161,13 +161,13 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
   if (event->type() == QEvent::KeyPress)
   {
     QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-    QString msg = QString("keyboard press %1").arg(keyStr(keyEvent->key(), keyEvent->text()));
+    QString msg = QString("keyboard press %1 %2").arg(keyEvent->key()).arg(keyEvent->text());
     sendMessage(msg);
   }
   else if (event->type() == QEvent::KeyRelease)
   {
     QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-    QString msg = QString("keyboard release %1").arg(keyStr(keyEvent->key(), keyEvent->text()));
+    QString msg = QString("keyboard release %1 %2").arg(keyEvent->key()).arg(keyEvent->text());
     sendMessage(msg);
   }
 
