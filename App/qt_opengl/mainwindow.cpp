@@ -4,12 +4,17 @@
 #include <QSlider>
 #include <QLayout>
 #include <QFileDialog>
+#include <QEvent>
+#include <QKeyEvent>
+#include <QDebug>
+#include <QWheelEvent> 
+
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {
     m_mpv = new MpvWidget(this);
-    m_slider = new QSlider();
-    m_slider->setOrientation(Qt::Horizontal);
+    m_mpv->installEventFilter(this);
+    m_mpv->setFocusPolicy(Qt::StrongFocus);
     m_openBtn = new QPushButton("Open");
     m_playBtn = new QPushButton("Pause");
     QHBoxLayout *hb = new QHBoxLayout();
@@ -17,18 +22,56 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     hb->addWidget(m_playBtn);
     QVBoxLayout *vl = new QVBoxLayout();
     vl->addWidget(m_mpv);
-    vl->addWidget(m_slider);
     vl->addLayout(hb);
     setLayout(vl);
-    connect(m_slider, SIGNAL(sliderMoved(int)), SLOT(seek(int)));
     connect(m_openBtn, SIGNAL(clicked()), SLOT(openMedia()));
-    connect(m_playBtn, SIGNAL(clicked()), SLOT(pauseResume()));
-    connect(m_mpv, SIGNAL(positionChanged(int)), m_slider, SLOT(setValue(int)));
-    connect(m_mpv, SIGNAL(durationChanged(int)), this, SLOT(setSliderRange(int)));
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+  qInfo()<<event->type();
+
+  if (event->type() == QEvent::KeyPress)
+  {
+    QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+    qInfo()<<(QString("Key Down (%1)").arg(keyEvent->text()));
+  }
+  else if (event->type() == QEvent::KeyRelease)
+  {
+    QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+    qInfo()<<(QString("Key Up (%1)").arg(keyEvent->text()));
+  }
+
+  else if (event->type() == QEvent::MouseMove)
+  {
+    QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+    qInfo()<<(QString("Mouse move (%1,%2)").arg(mouseEvent->pos().x()).arg(mouseEvent->pos().y()));
+  }
+  else if (event->type() == QEvent::MouseButtonPress)
+  {
+    QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+    qInfo()<<(QString("Mouse Down(%1,%2)").arg(mouseEvent->pos().x()).arg(mouseEvent->pos().y()));
+  }
+  else if (event->type() == QEvent::MouseButtonRelease)
+  {
+    QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+    qInfo()<<(QString("Mouse Up(%1,%2)").arg(mouseEvent->pos().x()).arg(mouseEvent->pos().y()));
+  }
+
+  else if (event->type() == QEvent::Wheel)
+  {
+    QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
+    qInfo()<<(QString("Wheel (%1,%2)").arg(wheelEvent->angleDelta().x()).arg(wheelEvent->angleDelta().y()));
+  }
+   
+  return false;
 }
 
 void MainWindow::openMedia()
 {
+    m_mpv->command(QStringList() << "loadfile" << "tcp://0.0.0.0:12345?listen");
+    return;
+
     QString file = QFileDialog::getOpenFileName(0, "Open a video");
     if (file.isEmpty())
         return;
@@ -44,9 +87,4 @@ void MainWindow::pauseResume()
 {
     const bool paused = m_mpv->getProperty("pause").toBool();
     m_mpv->setProperty("pause", !paused);
-}
-
-void MainWindow::setSliderRange(int duration)
-{
-    m_slider->setRange(0, duration);
 }
