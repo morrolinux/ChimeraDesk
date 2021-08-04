@@ -128,6 +128,32 @@ QString MainWindow::keyStr(int code, QString text)
   }
 }
 
+// translate to remote screen coordinates taking into account window size and borders
+QPoint MainWindow::translateMouseCoords(QPoint mp)
+{
+  int osd_border_top = int(m_mpv->getProperty("osd-dimensions/mt").toDouble()); 
+  int osd_border_left = int(m_mpv->getProperty("osd-dimensions/ml").toDouble());
+  int w = int(m_mpv->getProperty("osd-width").toDouble()) - osd_border_left * 2;
+  int h = int(m_mpv->getProperty("osd-height").toDouble()) - osd_border_top * 2;
+  int video_w = int(m_mpv->getProperty("video-params/w").toDouble());
+  int video_h = int(m_mpv->getProperty("video-params/h").toDouble());
+
+  // qInfo()<<"OSD borders:"<<osd_border_top<<osd_border_left<<"\n";
+  // qInfo()<<"Content w,h:"<<w<<h<<"\n";
+  // qInfo()<<"Remote Screen w,h:"<<video_w<<video_h<<"\n";
+
+  int x = mp.x() - osd_border_left;
+  int y = mp.y() - osd_border_top;
+  
+  int nx = (x - 0) * video_w / w + 0;
+  int ny = (y - 0) * video_h / h + 0;
+  
+  mp.setX(nx);
+  mp.setY(ny);
+
+  return mp;
+}
+
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
   // qInfo()<<event->type();
@@ -148,19 +174,23 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
   else if (event->type() == QEvent::MouseMove)
   {
     QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-    QString msg = QString("mouse %1 %2 move").arg(mouseEvent->pos().x()).arg(mouseEvent->pos().y());
+    QPoint mp = translateMouseCoords(mouseEvent->pos());
+    QString msg = QString("mouse %1 %2 move").arg(mp.x()).arg(mp.y());
     sendMessage(msg);
   }
   else if (event->type() == QEvent::MouseButtonPress)
   {
     QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-    QString msg = QString("mouse %1 %2 click %3").arg(mouseEvent->pos().x()).arg(mouseEvent->pos().y()).arg(buttonName(mouseEvent->button()));
+    QPoint mp = translateMouseCoords(mouseEvent->pos());
+    QString msg = QString("mouse %1 %2 click %3").arg(mp.x()).arg(mp.y()).arg(buttonName(mouseEvent->button()));
     sendMessage(msg);
   }
   else if (event->type() == QEvent::MouseButtonRelease)
   {
     QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-    QString msg = QString("mouse %1 %2 release %3").arg(mouseEvent->pos().x()).arg(mouseEvent->pos().y()).arg(buttonName(mouseEvent->button()));
+    QPoint mp = translateMouseCoords(mouseEvent->pos());
+    QString msg = QString("mouse %1 %2 release %3").arg(mp.x()).arg(mp.y()).arg(buttonName(mouseEvent->button()));
+    qInfo()<<mp;
     sendMessage(msg);
   }
 
@@ -169,9 +199,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
     int dx = (wheelEvent->angleDelta().x() < 0) ? -1 : (wheelEvent->angleDelta().x() > 0) ? 1 : 0;
     int dy = (wheelEvent->angleDelta().y() < 0) ? -1 : (wheelEvent->angleDelta().y() > 0) ? 1 : 0;
+    QPoint mp = translateMouseCoords(wheelEvent->pos());
     QString msg = QString("mouse %1 %2 scroll %3 %4")
-      .arg(wheelEvent->pos().x())
-      .arg(wheelEvent->pos().y())
+      .arg(mp.x())
+      .arg(mp.y())
       .arg(dx)
       .arg(dy);
     sendMessage(msg);

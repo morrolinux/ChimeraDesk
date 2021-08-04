@@ -25,6 +25,7 @@ private:
     bool sendMessage(QString msg);
     QString buttonName(int num);
     QString keyStr(int code, QString text);
+    QPoint translateMouseCoords(QPoint mp);
     MpvWidget *m_mpv;
     QTcpServer  _server;
     QList<QTcpSocket*>  _sockets;
