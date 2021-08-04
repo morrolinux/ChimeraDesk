@@ -24,6 +24,7 @@ private Q_SLOTS:
 private:
     bool sendMessage(QString msg);
     QString buttonName(int num);
+    QString keyStr(int code, QString text);
     MpvWidget *m_mpv;
     QTcpServer  _server;
     QList<QTcpSocket*>  _sockets;
