@@ -13,9 +13,6 @@ class MainWindow : public QWidget
 public:
     explicit MainWindow(QWidget *parent = 0);
 public Q_SLOTS:
-    void openMedia();
-    void seek(int pos);
-    void pauseResume();
     bool eventFilter(QObject *obj, QEvent *event);
 private Q_SLOTS:
 private:

@@ -15,21 +15,18 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     m_mpv = new MpvWidget(this);
     m_mpv->installEventFilter(this);
     m_mpv->setFocusPolicy(Qt::StrongFocus);
-    m_openBtn = new QPushButton("Open");
-    m_playBtn = new QPushButton("Pause");
     QHBoxLayout *hb = new QHBoxLayout();
-    hb->addWidget(m_openBtn);
-    hb->addWidget(m_playBtn);
     QVBoxLayout *vl = new QVBoxLayout();
     vl->addWidget(m_mpv);
     vl->addLayout(hb);
     setLayout(vl);
-    connect(m_openBtn, SIGNAL(clicked()), SLOT(openMedia()));
+    m_mpv->command(QStringList() << "loadfile" << "tcp://0.0.0.0:12345?listen");
+
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-  qInfo()<<event->type();
+  // qInfo()<<event->type();
 
   if (event->type() == QEvent::KeyPress)
   {
@@ -65,26 +62,4 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
   }
    
   return false;
-}
-
-void MainWindow::openMedia()
-{
-    m_mpv->command(QStringList() << "loadfile" << "tcp://0.0.0.0:12345?listen");
-    return;
-
-    QString file = QFileDialog::getOpenFileName(0, "Open a video");
-    if (file.isEmpty())
-        return;
-    m_mpv->command(QStringList() << "loadfile" << file);
-}
-
-void MainWindow::seek(int pos)
-{
-    m_mpv->command(QVariantList() << "seek" << pos << "absolute");
-}
-
-void MainWindow::pauseResume()
-{
-    const bool paused = m_mpv->getProperty("pause").toBool();
-    m_mpv->setProperty("pause", !paused);
 }
