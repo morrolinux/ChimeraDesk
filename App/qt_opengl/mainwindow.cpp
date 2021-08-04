@@ -124,7 +124,7 @@ QString MainWindow::keyStr(int code, QString text)
     case 16781571:
       return QString("Key.alt_r");
     default:
-      return QString("%1").arg(text);
+      return QString("%1").arg(code);
   }
 }
 
