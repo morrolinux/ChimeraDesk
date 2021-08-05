@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), _server(this)
     vl->addWidget(m_mpv);
     vl->addLayout(hb);
     setLayout(vl);
-    m_mpv->command(QStringList() << "loadfile" << "tcp://0.0.0.0:12345?listen");
+    // m_mpv->command(QStringList() << "loadfile" << "tcp://0.0.0.0:12345?listen");
     _server.listen(QHostAddress::Any, 12346);
     connect(&_server, SIGNAL(newConnection()), this, SLOT(onNewConnection()));
 }
@@ -32,6 +32,7 @@ void MainWindow::onNewConnection()
    QTcpSocket *clientSocket = _server.nextPendingConnection();
    connect(clientSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
    connect(clientSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onSocketStateChanged(QAbstractSocket::SocketState)));
+   m_mpv->command(QStringList() << "loadfile" << "tcp://0.0.0.0:12345?listen");
 
     _sockets.push_back(clientSocket);
     for (QTcpSocket* socket : _sockets) {
