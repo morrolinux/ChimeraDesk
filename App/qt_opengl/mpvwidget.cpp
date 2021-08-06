@@ -27,16 +27,23 @@ MpvWidget::MpvWidget(QWidget *parent, Qt::WindowFlags f)
     mpv_set_property_string(mpv, "terminal", "yes");
     mpv_set_property_string(mpv, "msg-level", "all=v");    
     mpv_set_property_string(mpv, "profile", "low-latency");
-    
+    //qInfo()<<mpv_set_property_string(mpv, "cache", "no");
+    //qInfo()<<mpv_set_property_string(mpv, "opengl-glfinish", "yes");
+    //qInfo()<<mpv_set_property_string(mpv, "opengl-swapinterval", "0");
+    //// qInfo()<<mpv_set_property_string(mpv, "framedrop", "no");
+    //qInfo()<<mpv_set_property_string(mpv, "speed", "1.01");
+    //qInfo()<<mpv_set_property_string(mpv, "demuxer-max-bytes", "512k");
+
     int yes = 1;
     int no = 0;
 
     qInfo()<<"\n";
 
-    qInfo()<<mpv_set_option(mpv, "cache", MPV_FORMAT_FLAG, &no);
-    qInfo()<<mpv_set_property(mpv, "cache", MPV_FORMAT_FLAG, &no);
+    //qInfo()<<mpv_set_option(mpv, "cache", MPV_FORMAT_FLAG, &no);
+    //qInfo()<<mpv_set_property(mpv, "cache", MPV_FORMAT_FLAG, &no);
     qInfo()<<mpv_set_option(mpv, "untimed", MPV_FORMAT_FLAG, &yes);
-    
+    qInfo()<<mpv_set_property(mpv, "untimed", MPV_FORMAT_FLAG, &yes);
+
     if (mpv_initialize(mpv) < 0)
         throw std::runtime_error("could not initialize mpv context");
 
