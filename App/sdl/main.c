@@ -10,6 +10,7 @@
 #include <mpv/render_gl.h>
 
 static Uint32 wakeup_on_mpv_render_update, wakeup_on_mpv_events;
+static const int MSGLEN = 64;
 
 static void die(const char *msg)
 {
@@ -32,6 +33,16 @@ static void on_mpv_render_update(void *ctx)
 {
     SDL_Event event = {.type = wakeup_on_mpv_render_update};
     SDL_PushEvent(&event);
+}
+
+static int send_message(const char *msg)
+{
+    char buffer[MSGLEN];
+    const char *padding="#####################################################";
+    int padLen = MSGLEN - strlen(msg);
+    if(padLen < 0) padLen = 0;
+    snprintf(buffer, MSGLEN, "%s %*.*s", msg, padLen, padLen, padding);
+    printf("%s\n", buffer);
 }
 
 int main(int argc, char *argv[])
@@ -120,8 +131,9 @@ int main(int argc, char *argv[])
     mpv_command_async(mpv, 0, cmd);
 
     const char *action;
-
+    
     while (1) {
+        char buffer[MSGLEN];
         SDL_Event event;
         if (SDL_WaitEvent(&event) != 1)
             die("event loop error");
@@ -148,12 +160,14 @@ int main(int argc, char *argv[])
             int x, y;
             SDL_GetMouseState(&x, &y);
 
-            printf("mouse %d %d %s %d\n", x, y, action, btn);      
+            snprintf(buffer, MSGLEN, "mouse %d %d %s %d", x, y, action, btn, NULL);  
+            send_message(buffer);
             break;      
         case SDL_KEYUP:
         case SDL_KEYDOWN:
             action = (event.type == SDL_KEYDOWN) ? "press" : "release"; 
-            printf("keyboard %s %d\n", action, event.key.keysym.sym);            
+            snprintf(buffer, MSGLEN, "keyboard %s %d", action, event.key.keysym.sym);         
+            send_message(buffer);
             break;
         default:
             // Happens when there is new work for the render thread (such as
