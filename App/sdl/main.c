@@ -49,6 +49,11 @@ int main(int argc, char *argv[])
 
     mpv_request_log_messages(mpv, "debug");
 
+    mpv_set_property_string(mpv, "profile", "low-latency");
+    int yes = 1;
+    mpv_set_option(mpv, "untimed", MPV_FORMAT_FLAG, &yes);
+    mpv_set_property(mpv, "untimed", MPV_FORMAT_FLAG, &yes);
+
     // Jesus Christ SDL, you suck!
     SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "no");
 
@@ -114,6 +119,8 @@ int main(int argc, char *argv[])
     const char *cmd[] = {"loadfile", argv[1], NULL};
     mpv_command_async(mpv, 0, cmd);
 
+    const char *action;
+
     while (1) {
         SDL_Event event;
         if (SDL_WaitEvent(&event) != 1)
@@ -126,21 +133,27 @@ int main(int argc, char *argv[])
             if (event.window.event == SDL_WINDOWEVENT_EXPOSED)
                 redraw = 1;
             break;
+        case SDL_MOUSEBUTTONUP: 
+        case SDL_MOUSEBUTTONDOWN:
+            // get event type (click/release) and button
+            action = (event.type == SDL_MOUSEBUTTONDOWN) ? "click" : "release"; 
+            const SDL_MouseButtonEvent mouse_event = event.button;
+
+            // swap SDL mouse right and middle
+            int btn = 1;
+            if (mouse_event.button > 1)
+                btn = (mouse_event.button == 2) ? 3 : 2;
+
+            // get mouse coordinates
+            int x, y;
+            SDL_GetMouseState(&x, &y);
+
+            printf("mouse %d %d %s %d\n", x, y, action, btn);      
+            break;      
+        case SDL_KEYUP:
         case SDL_KEYDOWN:
-            if (event.key.keysym.sym == SDLK_SPACE) {
-                const char *cmd_pause[] = {"cycle", "pause", NULL};
-                mpv_command_async(mpv, 0, cmd_pause);
-            }
-            if (event.key.keysym.sym == SDLK_s) {
-                // Also requires MPV_RENDER_PARAM_ADVANCED_CONTROL if you want
-                // screenshots to be rendered on GPU (like --vo=gpu would do).
-                const char *cmd_scr[] = {"screenshot-to-file",
-                                         "screenshot.png",
-                                         "window",
-                                         NULL};
-                printf("attempting to save screenshot to %s\n", cmd_scr[1]);
-                mpv_command_async(mpv, 0, cmd_scr);
-            }
+            action = (event.type == SDL_KEYDOWN) ? "press" : "release"; 
+            printf("keyboard %s %d\n", action, event.key.keysym.sym);            
             break;
         default:
             // Happens when there is new work for the render thread (such as
