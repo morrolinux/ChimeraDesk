@@ -4,13 +4,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+
 #include <SDL.h>
 
 #include <mpv/client.h>
 #include <mpv/render_gl.h>
 
+#define on_error(...) { fprintf(stderr, __VA_ARGS__); fflush(stderr); exit(1); }
+
 static Uint32 wakeup_on_mpv_render_update, wakeup_on_mpv_events;
+
+// TCP Server
 static const int MSGLEN = 64;
+static const int PORT = 12346;
+struct sockaddr_in server, client;
+int server_fd, client_fd, err;
 
 static void die(const char *msg)
 {
@@ -43,12 +54,26 @@ static int send_message(const char *msg)
     if(padLen < 0) padLen = 0;
     snprintf(buffer, MSGLEN, "%s %*.*s", msg, padLen, padLen, padding);
     printf("%s\n", buffer);
+    err = send(client_fd, buffer, MSGLEN, 0);
+    if (err < 0) on_error("Client write failed\n");
 }
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
-        die("pass a single media file as argument");
+    // Init TCP server
+    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_fd < 0) on_error("Could not create socket\n");
+    server.sin_family = AF_INET;
+    server.sin_port = htons(PORT);
+    server.sin_addr.s_addr = htonl(INADDR_ANY);
+    int opt_val = 1;
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof opt_val);
+    err = bind(server_fd, (struct sockaddr *) &server, sizeof(server));
+    if (err < 0) on_error("Could not bind socket\n");
+    err = listen(server_fd, 128);
+    if (err < 0) on_error("Could not listen on socket\n");
+    printf("TCP server is listening on port %d\n", PORT);
+    socklen_t client_len = sizeof(client);
 
     mpv_handle *mpv = mpv_create();
     if (!mpv)
@@ -126,8 +151,12 @@ int main(int argc, char *argv[])
     //  users which run OpenGL on a different thread.)
     mpv_render_context_set_update_callback(mpv_gl, on_mpv_render_update, NULL);
 
-    // Play this file.
-    const char *cmd[] = {"loadfile", argv[1], NULL};
+    // Wait for TCP connection
+    client_fd = accept(server_fd, (struct sockaddr *) &client, &client_len);
+    if (client_fd < 0) on_error("Could not establish new connection\n");
+
+    // Play network video stream
+    const char *cmd[] = {"loadfile", "tcp://0.0.0.0:12345?listen", NULL};
     mpv_command_async(mpv, 0, cmd);
 
     const char *action;
