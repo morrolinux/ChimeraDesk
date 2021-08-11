@@ -155,6 +155,11 @@ int main(int argc, char *argv[])
     client_fd = accept(server_fd, (struct sockaddr *) &client, &client_len);
     if (client_fd < 0) on_error("Could not establish new connection\n");
 
+    // Read TCP client message
+    // int read = recv(client_fd, buf, BUFFER_SIZE, 0);
+    // if (!read) break; // done reading
+    // if (read < 0) on_error("Client read failed\n");
+	
     // Play network video stream
     const char *cmd[] = {"loadfile", "tcp://0.0.0.0:12345?listen", NULL};
     mpv_command_async(mpv, 0, cmd);
