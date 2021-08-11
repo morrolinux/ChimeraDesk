@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -26,6 +27,16 @@ static const int MSGLEN = 64;
 static const int PORT = 12346;
 struct sockaddr_in server, client;
 int server_fd, client_fd, err;
+
+// Fullscreen mode (WIP)
+bool isFullScreen = false;
+void toggle_fullscreen(SDL_Window* window, bool currentState)
+{
+    isFullScreen = !currentState;
+
+    SDL_SetWindowFullscreen(window, !currentState);
+    SDL_ShowCursor(currentState);
+}
 
 static void die(const char *msg)
 {
@@ -194,7 +205,8 @@ int main(int argc, char *argv[])
     const char *action;
     int x, y;
     int mouse_status = SDL_MOUSEBUTTONUP;
-    
+    // toggle_fullscreen(window, isFullScreen);
+
     while (1) {
         char buffer[MSGLEN];
         SDL_Event event;
@@ -288,6 +300,7 @@ int main(int argc, char *argv[])
         }
     }
 done:
+    // toggle_fullscreen(window, isFullScreen);
 
     // Destroy the GL renderer and all of the GL objects it allocated. If video
     // is still running, the video track will be deselected.
