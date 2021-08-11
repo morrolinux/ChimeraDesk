@@ -18,6 +18,8 @@
 static Uint32 wakeup_on_mpv_render_update, wakeup_on_mpv_events;
 
 mpv_handle *mpv;
+// swap SDL mouse right and middle
+const char *btn_string[] = {NULL, "Button.left", "Button.right", "Button.middle"};
 
 // TCP Server
 static const int MSGLEN = 64;
@@ -220,15 +222,10 @@ int main(int argc, char *argv[])
             action = (event.type == SDL_MOUSEBUTTONDOWN) ? "click" : "release"; 
             const SDL_MouseButtonEvent mouse_event = event.button;
 
-            // swap SDL mouse right and middle
-            int btn = 1;
-            if (mouse_event.button > 1)
-                btn = (mouse_event.button == 2) ? 3 : 2;
-
             // get mouse coordinates
             SDL_GetMouseState(&x, &y);
             translate_mouse_coords(&x, &y);
-            snprintf(buffer, MSGLEN, "mouse %d %d %s %d", x, y, action, btn, NULL);  
+            snprintf(buffer, MSGLEN, "mouse %d %d %s %s", x, y, action, btn_string[mouse_event.button], NULL);  
             send_message(buffer);
             break;      
         case SDL_KEYUP:
