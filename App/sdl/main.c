@@ -19,8 +19,7 @@
 static Uint32 wakeup_on_mpv_render_update, wakeup_on_mpv_events;
 
 mpv_handle *mpv;
-// swap SDL mouse right and middle
-const char *btn_string[] = {NULL, "Button.left", "Button.right", "Button.middle"};
+const char *btn_string[] = {NULL, "Button.left", "Button.middle", "Button.right"};
 
 // TCP Server
 static const int MSGLEN = 64;
