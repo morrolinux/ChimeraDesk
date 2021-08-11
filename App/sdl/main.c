@@ -131,6 +131,8 @@ int main(int argc, char *argv[])
     mpv_command_async(mpv, 0, cmd);
 
     const char *action;
+    int x, y;
+    int mouse_status = SDL_MOUSEBUTTONUP;
     
     while (1) {
         char buffer[MSGLEN];
@@ -145,9 +147,16 @@ int main(int argc, char *argv[])
             if (event.window.event == SDL_WINDOWEVENT_EXPOSED)
                 redraw = 1;
             break;
-        case SDL_MOUSEBUTTONUP: 
+        case SDL_MOUSEMOTION: 
+            if (mouse_status != SDL_MOUSEBUTTONDOWN) break;
+            SDL_GetMouseState(&x, &y);
+            snprintf(buffer, MSGLEN, "mouse %d %d %s", x, y, "move", NULL);  
+            send_message(buffer);
+            break;
+        case SDL_MOUSEBUTTONUP:
         case SDL_MOUSEBUTTONDOWN:
             // get event type (click/release) and button
+            mouse_status = event.type;
             action = (event.type == SDL_MOUSEBUTTONDOWN) ? "click" : "release"; 
             const SDL_MouseButtonEvent mouse_event = event.button;
 
@@ -157,7 +166,6 @@ int main(int argc, char *argv[])
                 btn = (mouse_event.button == 2) ? 3 : 2;
 
             // get mouse coordinates
-            int x, y;
             SDL_GetMouseState(&x, &y);
 
             snprintf(buffer, MSGLEN, "mouse %d %d %s %d", x, y, action, btn, NULL);  
