@@ -219,6 +219,12 @@ int main(int argc, char *argv[])
             if (event.window.event == SDL_WINDOWEVENT_EXPOSED)
                 redraw = 1;
             break;
+        case SDL_MOUSEWHEEL:
+            SDL_GetMouseState(&x, &y);
+            translate_mouse_coords(&x, &y);
+            snprintf(buffer, MSGLEN, "mouse %d %d %s %d %d", x, y, "scroll", -event.wheel.x, event.wheel.y);  
+            send_message(buffer);
+            break;
         case SDL_MOUSEMOTION: 
             // if (mouse_status != SDL_MOUSEBUTTONDOWN) break;  // perf. optimization if slow network
             SDL_GetMouseState(&x, &y);
