@@ -82,6 +82,11 @@ void translate_mouse_coords(int *x, int *y)
   mpv_get_property(mpv, "osd-height", MPV_FORMAT_INT64, &h); 
   mpv_get_property(mpv, "video-params/w", MPV_FORMAT_INT64, &video_w); 
   mpv_get_property(mpv, "video-params/h", MPV_FORMAT_INT64, &video_h); 
+  
+  // safeguard for mouse events before video feed
+  if (video_w <= 0 || video_h <= 0)
+    return;
+
   w -= osd_border_left * 2;
   h -= osd_border_top * 2;
   
