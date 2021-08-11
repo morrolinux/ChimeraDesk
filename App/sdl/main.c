@@ -17,6 +17,8 @@
 
 static Uint32 wakeup_on_mpv_render_update, wakeup_on_mpv_events;
 
+mpv_handle *mpv;
+
 // TCP Server
 static const int MSGLEN = 64;
 static const int PORT = 12346;
@@ -58,6 +60,29 @@ static int send_message(const char *msg)
     if (err < 0) on_error("Client write failed\n");
 }
 
+// translate to remote screen coordinates taking into account window size and borders
+void translate_mouse_coords(int *x, int *y)
+{
+  int osd_border_top, osd_border_left, w, h, video_w, video_h, nx, ny;
+  mpv_get_property(mpv, "osd-dimensions/mt", MPV_FORMAT_INT64, &osd_border_top); 
+  mpv_get_property(mpv, "osd-dimensions/ml", MPV_FORMAT_INT64, &osd_border_left); 
+  mpv_get_property(mpv, "osd-width", MPV_FORMAT_INT64, &w); 
+  mpv_get_property(mpv, "osd-height", MPV_FORMAT_INT64, &h); 
+  mpv_get_property(mpv, "video-params/w", MPV_FORMAT_INT64, &video_w); 
+  mpv_get_property(mpv, "video-params/h", MPV_FORMAT_INT64, &video_h); 
+  w -= osd_border_left * 2;
+  h -= osd_border_top * 2;
+  
+  nx = (*x - osd_border_left) * video_w / w;
+  ny = (*y - osd_border_top) * video_h / h;
+
+  nx = (nx < 0) ? 0: nx;
+  ny = (ny < 0) ? 0: ny;
+  
+  *x = nx;
+  *y = ny;
+}
+
 int main(int argc, char *argv[])
 {
     // Init TCP server
@@ -75,7 +100,7 @@ int main(int argc, char *argv[])
     printf("TCP server is listening on port %d\n", PORT);
     socklen_t client_len = sizeof(client);
 
-    mpv_handle *mpv = mpv_create();
+    mpv = mpv_create();
     if (!mpv)
         die("context init failed");
 
@@ -184,6 +209,7 @@ int main(int argc, char *argv[])
         case SDL_MOUSEMOTION: 
             if (mouse_status != SDL_MOUSEBUTTONDOWN) break;
             SDL_GetMouseState(&x, &y);
+            translate_mouse_coords(&x, &y);
             snprintf(buffer, MSGLEN, "mouse %d %d %s", x, y, "move", NULL);  
             send_message(buffer);
             break;
@@ -201,7 +227,7 @@ int main(int argc, char *argv[])
 
             // get mouse coordinates
             SDL_GetMouseState(&x, &y);
-
+            translate_mouse_coords(&x, &y);
             snprintf(buffer, MSGLEN, "mouse %d %d %s %d", x, y, action, btn, NULL);  
             send_message(buffer);
             break;      
