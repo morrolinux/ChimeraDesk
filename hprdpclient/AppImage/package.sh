@@ -5,7 +5,7 @@ rm -rf AppDir
 wget -c "https://raw.githubusercontent.com/TheAssassin/linuxdeploy-plugin-conda/master/linuxdeploy-plugin-conda.sh"
 wget -c "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage"
 # we need python 3.7 or lower for this plugin to work due to a later deprecation
-sed '/miniconda_url=.*/i \    miniconda_installer_filename=Miniconda3-py37_4.10.3-Linux-x86_64.sh' linuxdeploy-plugin-conda.sh
+sed -i '/miniconda_url=.*/i \    miniconda_installer_filename=Miniconda3-py37_4.10.3-Linux-x86_64.sh' linuxdeploy-plugin-conda.sh
 chmod +x linuxdeploy-x86_64.AppImage linuxdeploy-plugin-conda.sh
 
 mkdir -p AppDir/usr/bin
