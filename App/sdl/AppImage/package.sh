@@ -14,6 +14,8 @@ mv main $MYAPP.AppDir/usr/bin/myapp
 mkdir -p $MYAPP.AppDir/usr/lib/
 for file in $(ldd ../main | cut -d' ' -f3); do cp $file $MYAPP.AppDir/usr/lib/; done
 
+mkdir _out
+cd _out
 wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool-x86_64.AppImage
 chmod +x appimagetool-x86_64.AppImage
-./appimagetool-x86_64.AppImage $MYAPP.AppDir/
+./appimagetool-x86_64.AppImage ../$MYAPP.AppDir/
