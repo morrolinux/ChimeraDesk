@@ -1,5 +1,7 @@
 #!/bin/bash
 
+if [[ -z $DISPLAY ]]; then export DISPLAY=:0.0; else echo DISPLAY is $DISPLAY; fi
+
 $APPDIR/usr/bin/python -m client &
 
 sleep 1
