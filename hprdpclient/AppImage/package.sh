@@ -8,9 +8,9 @@ wget -c "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous
 sed -i '/miniconda_url=.*/i \    miniconda_installer_filename=Miniconda3-py37_4.10.3-Linux-x86_64.sh' _out/linuxdeploy-plugin-conda.sh
 chmod +x _out/linuxdeploy-x86_64.AppImage _out/linuxdeploy-plugin-conda.sh
 
-chmod +x client.sh
 mkdir -p AppDir/usr/bin
-cp client.sh AppDir/usr/bin/
+cp ../client.sh AppDir/usr/bin/
+chmod +x AppDir/usr/bin/client.sh
 
 cat > kvm-client.desktop <<\EOF
 [Desktop Entry]
