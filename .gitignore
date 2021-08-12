@@ -129,3 +129,9 @@ dmypy.json
 .pyre/
 
 App/qt/build
+
+*.AppImage
+*_temp_home
+linuxdeploy-plugin-conda.sh
+App/sdl/main
+hprdpclient/AppImage/AppDir
