@@ -1,15 +1,15 @@
-# Clean up 
-rm -rf AppDir
+#!/bin/bash
 
 # Download linuxdeploy and conda plugin
-wget -c "https://raw.githubusercontent.com/TheAssassin/linuxdeploy-plugin-conda/master/linuxdeploy-plugin-conda.sh"
-wget -c "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage"
+mkdir _out
+wget -c "https://raw.githubusercontent.com/TheAssassin/linuxdeploy-plugin-conda/master/linuxdeploy-plugin-conda.sh" -P _out/
+wget -c "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage" -P _out/
 # we need python 3.7 or lower for this plugin to work due to a later deprecation
-sed -i '/miniconda_url=.*/i \    miniconda_installer_filename=Miniconda3-py37_4.10.3-Linux-x86_64.sh' linuxdeploy-plugin-conda.sh
-chmod +x linuxdeploy-x86_64.AppImage linuxdeploy-plugin-conda.sh
+sed -i '/miniconda_url=.*/i \    miniconda_installer_filename=Miniconda3-py37_4.10.3-Linux-x86_64.sh' _out/linuxdeploy-plugin-conda.sh
+chmod +x _out/linuxdeploy-x86_64.AppImage _out/linuxdeploy-plugin-conda.sh
 
-mkdir -p AppDir/usr/bin
 chmod +x client.sh
+mkdir -p AppDir/usr/bin
 cp client.sh AppDir/usr/bin/
 
 cat > kvm-client.desktop <<\EOF
@@ -26,8 +26,12 @@ MimeType=application/x-extension-fcstd;
 EOF
 
 export CONDA_PACKAGES="pip"
-export PIP_REQUIREMENTS="-e ../client/"
+export PIP_REQUIREMENTS="-e ../../client/"
 export CONDA_PYTHON_VERSION="3.7"
-./linuxdeploy-x86_64.AppImage --appdir AppDir -d kvm-client.desktop -i keyboard.png --plugin conda --output appimage
+cd _out
+./linuxdeploy-x86_64.AppImage --appdir ../AppDir -d ../kvm-client.desktop -i ../keyboard.png --plugin conda --output appimage
+cd ..
 
+# Clean up 
 rm kvm-client.desktop
+rm -rf AppDir
