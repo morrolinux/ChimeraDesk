@@ -1,6 +1,14 @@
 #!/bin/bash
 
-if [[ -z $DISPLAY ]]; then export DISPLAY=:0.0; else echo DISPLAY is $DISPLAY; fi
+if [[ -z $DISPLAY ]]
+then 
+	export DISPLAY=:0.0
+else 
+	zenity --question --title="Remote Control" --text="Allow remote control?" --no-wrap
+	CONTINUE=$? 
+fi
+
+if [[ $CONTINUE -eq 1 ]]; then exit; fi
 
 $APPDIR/usr/bin/python -m client &
 
@@ -15,3 +23,5 @@ EOF
 fi
 
 bash ~/.config/hprdpvideo.sh
+
+zenity --info --title="Terminating" --text="Screen sharing ended" --no-wrap
