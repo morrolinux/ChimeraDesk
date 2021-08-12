@@ -31,4 +31,9 @@ ssh -R 12345:127.0.0.1:12345 -R 12346:127.0.0.1:12346 user@IP -p 8080
 # This will also yield a shell you can use on step 3.
 ```
 2. Launch `HPRDP-x86_64.AppImage` on your local computer.
-3. Launch `HPRDP-KVM-4f4e79b-x86_64.AppImage` on your remote computer (`export DISPLAY=:0.0` first, if you are issuing this on a ssh shell) 
+3. Launch `HPRDP-KVM-4f4e79b-x86_64.AppImage` on your remote computer 
+
+
+That's it!
+
+You should now be able to see and control the remote screen.
