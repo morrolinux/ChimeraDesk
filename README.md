@@ -1,6 +1,14 @@
 # HPRDP
 High performance reverse SSH RDP solution (not really RDP, more like teamviewer..)
 
+## Glossary
+- `remote computer` : the one you want to connect to
+- `local computer` : the one you can physically type on
+- `remote/pubblic server` : (for reverse ssh configuration) it can be a VPS or generally any public server under no NAT network 
+
+## Requirements
+- On the remote pc: `ffmpeg notify-send`
+
 ## Infrastructure 
 
 ### Reverse SSH configuration
