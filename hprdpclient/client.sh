@@ -1,5 +1,7 @@
 #!/bin/bash
 
+env
+
 # chech weather we are running from terminal or by double click
 if [[ $TERM != "dumb" ]]; then export UI=0; else export UI=1; fi
 
@@ -23,7 +25,11 @@ fi
 if [[ $ABORT -eq 1 ]]; then exit; fi
 
 # Launch KVM client process and store its PID for later termination
-$APPDIR/usr/bin/python -m client &
+if [[ -z $APPDIR ]]; then
+    python -m client &
+else
+    $APPDIR/usr/bin/python $APPDIR/usr/bin/client.py &
+fi
 kvmpid=$!
 
 # Check weather the KVM process is running, terminate if not.

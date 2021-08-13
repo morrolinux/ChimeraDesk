@@ -11,6 +11,7 @@ chmod +x _out/linuxdeploy-x86_64.AppImage _out/linuxdeploy-plugin-conda.sh
 mkdir -p AppDir/usr/bin
 cp ../client.sh AppDir/usr/bin/
 chmod +x AppDir/usr/bin/client.sh
+cp ../client/src/client.py AppDir/usr/bin/
 
 cat > kvm-client.desktop <<\EOF
 [Desktop Entry]
