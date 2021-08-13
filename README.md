@@ -60,3 +60,26 @@ On first launch, the application writes a default ffmpeg command line under `~/.
 echo $BASHPID > /tmp/ffmpeg.pid; ffmpeg -f x11grab -draw_mouse 0 -s $screensize -framerate 30 -i $DISPLAY  -c:v libx264 -preset medium -profile high -pix_fmt yuv420p -tune zerolatency -b:v 2000K -minrate 2000K -maxrate 2000K -bufsize 512k -f mpegts tcp://127.0.0.1:12345
 ```
 You are free to change anything at your will, but be sure to keep the `echo $BASHPID > /tmp/ffmpeg.pid;` prefix as it's needed for terminating ffmpeg via UI dialog.
+
+
+## Building Instruction
+Example building on `Ubuntu 18.04`
+
+### Build the App
+On `Ubuntu 18.04` You need the latest `libmpv-dev` so 
+1. Add this `PPA`: `sudo add-apt-repository ppa:mc3man/bionic-media`
+2. Install build dependencies: `sudo apt install git gcc libmpv-dev libsdl2-dev`
+3. Clone this repo: `git clone https://github.com/morrolinux/HPRDP.git`
+4. Move to the App directory: `HPRDP/App/sdl/`
+5. And build it with: `gcc -o main main.c $(pkg-config --libs --cflags mpv sdl2) -std=c99`
+
+If everything went fine (no errors) you can even 
+**build the AppImage:**
+
+1. `cp AppImage && bash package.sh`
+2. The result will be under `_out`.
+
+### Build the (Remote) KVM component
+1. Move to the hprdpclient/Appimage folder: `cd HPRDP/hprdpclient/AppImage`
+2. And build everything into an AppImage like so: `bash package.sh`
+3. The result will be under `_out`.
