@@ -5,7 +5,8 @@ MYAPP=HPRDP
 gcc -o main ../main.c `pkg-config --libs --cflags mpv sdl2` -std=c99
 
 mkdir -p $MYAPP.AppDir/
-wget https://github.com/AppImage/AppImageKit/releases/download/continuous/AppRun-x86_64 -O $MYAPP.AppDir/AppRun
+# wget https://github.com/AppImage/AppImageKit/releases/download/continuous/AppRun-x86_64 -O $MYAPP.AppDir/AppRun
+cp AppRun.sh $MYAPP.AppDir/AppRun
 chmod +x $MYAPP.AppDir/AppRun
 mv $MYAPP.desktop $MYAPP.AppDir/
 mv myapp.png $MYAPP.AppDir/
