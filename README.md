@@ -1,4 +1,4 @@
-# HPRDP
+# ChimeraDesk
 High performance reverse SSH RDP solution (not really RDP, more like teamviewer..)
 
 ## Glossary
@@ -38,8 +38,8 @@ In such case `-p 8080` must be omitted unless you decide to open port `8080` to 
 ssh -R 12345:127.0.0.1:12345 -R 12346:127.0.0.1:12346 user@IP -p 8080
 # This will also yield a shell you can use on step 3.
 ```
-2. Launch `HPRDP-x86_64.AppImage` on your local computer.
-3. Launch `HPRDP-KVM-4f4e79b-x86_64.AppImage` on your remote computer 
+2. Launch `ChimeraDesk-x86_64.AppImage` on your local computer.
+3. Launch `ChimeraDesk-KVM-x86_64.AppImage` on your remote computer 
 
 
 That's it!
@@ -71,8 +71,8 @@ Example building on `Ubuntu 18.04`
 On `Ubuntu 18.04` You need the latest `libmpv-dev` so 
 1. Add this `PPA`: `sudo add-apt-repository ppa:mc3man/bionic-media`
 2. Install build dependencies: `sudo apt install git gcc libmpv-dev libsdl2-dev`
-3. Clone this repo: `git clone https://github.com/morrolinux/HPRDP.git`
-4. Move to the App directory: `HPRDP/App/sdl/`
+3. Clone this repo: `git clone https://github.com/morrolinux/ChimeraDesk.git`
+4. Move to the App directory: `ChimeraDesk/App/sdl/`
 5. And build it with: `gcc -o main main.c $(pkg-config --libs --cflags mpv sdl2) -std=c99`
 
 If everything went fine (no errors) you can even 
@@ -82,6 +82,6 @@ If everything went fine (no errors) you can even
 2. The result will be under `_out`.
 
 ### Build the (Remote) KVM component
-1. Move to the hprdpclient/Appimage folder: `cd HPRDP/hprdpclient/AppImage`
+1. Move to the hprdpclient/Appimage folder: `cd ChimeraDesk/hprdpclient/AppImage`
 2. And build everything into an AppImage like so: `bash package.sh`
 3. The result will be under `_out`.
