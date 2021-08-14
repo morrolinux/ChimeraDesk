@@ -135,3 +135,4 @@ App/qt/build
 linuxdeploy-plugin-conda.sh
 App/sdl/main
 hprdpclient/AppImage/AppDir
+App/sdl/AppImage/AppDir/usr/
