@@ -82,6 +82,6 @@ If everything went fine (no errors) you can even
 2. The result will be under `_out`.
 
 ### Build the (Remote) KVM component
-1. Move to the hprdpclient/Appimage folder: `cd ChimeraDesk/hprdpclient/AppImage`
+1. Move to the kvm/Appimage folder: `cd ChimeraDesk/kvm/AppImage`
 2. And build everything into an AppImage like so: `bash package.sh`
 3. The result will be under `_out`.
