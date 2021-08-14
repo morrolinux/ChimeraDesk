@@ -1,6 +1,6 @@
 # ChimeraDesk
-High performance reverse SSH RDP solution (not really RDP, more like teamviewer..)
-
+A simple, fast and flexible DIY Remote Desktop software 
+ 
 ## Glossary
 - `remote computer` : the one you want to connect to
 - `local computer` : the one you can physically type on
@@ -10,8 +10,11 @@ High performance reverse SSH RDP solution (not really RDP, more like teamviewer.
 - On the remote pc: `ffmpeg notify-send`
 
 ## Infrastructure 
+You can use this ChimeraDesk 
+- In **p2p mode** `Local --> Remote` (RDP-style) if you can/want to open ports on your router, or
+- In **centralized mode** `Local --> Public Server <-- Remote` (TW-style) if you can't/don't want to open ports on your router. 
 
-### Reverse SSH configuration
+### Setup for centralized mode (optional)
 If you need to connect between two NAT networks without opening ports on either side (like t.w. does)
 
 1. On a public server you own, configure ssh gateway ports by adding `GatewayPorts clientspecified` to `sshd_config`
@@ -26,11 +29,10 @@ ssh-copy-id -i ~/.ssh/reverse-key <user@server>
 ssh -i ~/.ssh/reverse-key -Ng -R *:8080:localhost:22 user@server
 ```
 
-
 ## USAGE
 In the following section we will refer to `IP` as: 
-- `Your public server IP` if you did the `Reverse SSH configuration`
-- `Your remote computer IP` if you can open port `22` on the remote computer NAT network. 
+- `Your public server IP` if you are running in **centralized mode**
+- `Your remote computer IP` if you can open port `22` on the remote computer NAT network (**p2p mode**).
 In such case `-p 8080` must be omitted unless you decide to open port `8080` to `22` in your router (suggested).
  
 1. Connect to the remote computer and forward local requests on ports `12345` and `12346` to localhost:
@@ -63,17 +65,18 @@ echo $BASHPID > /tmp/ffmpeg.pid; ffmpeg -f x11grab -draw_mouse 0 -s $screensize 
 ```
 You are free to change anything at your will, but be sure to keep the `echo $BASHPID > /tmp/ffmpeg.pid;` prefix as it's needed for terminating ffmpeg via UI dialog.
 
+**Please note that this file is considered user configuration and therefore never updated again by the program. If you expirience issues with the video configuration, try removing it before restarting the kvm component.**
 
 ## Building Instruction
 Example building on `Ubuntu 18.04`
 
 ### Build the App
-On `Ubuntu 18.04` You need the latest `libmpv-dev` so 
-1. Add this `PPA`: `sudo add-apt-repository ppa:mc3man/bionic-media`
-2. Install build dependencies: `sudo apt install git gcc libmpv-dev libsdl2-dev`
-3. Clone this repo: `git clone https://github.com/morrolinux/ChimeraDesk.git`
-4. Move to the App directory: `ChimeraDesk/App/sdl/`
-5. And build it with: `gcc -o main main.c $(pkg-config --libs --cflags mpv sdl2) -std=c99`
+On `Ubuntu 18.04` You need the latest `libmpv-dev` so add this PPA first: `sudo add-apt-repository ppa:mc3man/bionic-media`
+
+1. Install build dependencies: `sudo apt install git gcc libmpv-dev libsdl2-dev`
+2. Clone this repo: `git clone https://github.com/morrolinux/ChimeraDesk.git`
+3. Move to the App directory: `ChimeraDesk/App/sdl/`
+4. And build it with: `gcc -o main main.c $(pkg-config --libs --cflags mpv sdl2) -std=c99`
 
 If everything went fine (no errors) you can even 
 **build the AppImage:**
