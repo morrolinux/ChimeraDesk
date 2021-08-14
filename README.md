@@ -1,4 +1,7 @@
-# ChimeraDesk
+<img src="https://github.com/morrolinux/ChimeraDesk/raw/main/media/icon.png" width="100" height="100"> 
+
+# ChimeraDesk 
+
 A simple, fast and flexible DIY Remote Desktop software 
  
 ## Glossary
