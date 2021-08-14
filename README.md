@@ -46,6 +46,8 @@ That's it!
 
 You should now be able to see and control the remote screen.
 
+**Please note that the 'viewer' AppImage can be twice as heavy on the CPU compared to the natively built executable. Check the building instructions if you care about efficiency. It's simple enough and performs much better :)**
+
 ## Configuration
 Configuration is kept minimal and you get (arguably) reasonable default settings out of the box. 
 
@@ -76,7 +78,7 @@ On `Ubuntu 18.04` You need the latest `libmpv-dev` so
 If everything went fine (no errors) you can even 
 **build the AppImage:**
 
-1. `cp AppImage && bash package.sh`
+1. `cd AppImage && bash package.sh`
 2. The result will be under `_out`.
 
 ### Build the (Remote) KVM component
