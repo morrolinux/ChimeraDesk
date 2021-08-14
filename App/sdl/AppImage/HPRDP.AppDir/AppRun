@@ -27,8 +27,11 @@ if [ -e "$APPDIR/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2" ] ; then
   export GI_TYPELIB_PATH="${APPDIR}/usr/lib/x86_64-linux-gnu/girepository-1.0"
   export LIBRARY_PATH=$GDK_PIXBUF_MODULEDIR:$LIBRARY_PATH
   export LD_LIBRARY_PATH="$LIBRARY_PATH" 
+  env
   exec "${APPDIR}/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2" --inhibit-cache --library-path "${LIBRARY_PATH}" "${MAIN}" "$@"
 else
+  export LD_LIBRARY_PATH=$APPDIR/usr/lib:$LD_LIBRARY_PATH
+  env
   exec "${MAIN}" "$@"
 fi
 

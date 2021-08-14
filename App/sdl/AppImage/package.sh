@@ -2,7 +2,16 @@
 
 MYAPP=HPRDP
 
+# Build the program
 gcc -o main ../main.c `pkg-config --libs --cflags mpv sdl2` -std=c99
+
+if [[ $? -ne 0 ]]; then return; fi
+
+# Filter out breaking shared libs
+wget https://raw.githubusercontent.com/AppImage/pkg2appimage/master/excludelist -O excludelist
+ldd main|tr -d '\t'|grep -v "^/"|cut -d' ' -f 3 > ldd_paths.txt
+chmod +x cleanup_libs.py
+./cleanup_libs.py
 
 mkdir -p $MYAPP.AppDir/
 # wget https://github.com/AppImage/AppImageKit/releases/download/continuous/AppRun-x86_64 -O $MYAPP.AppDir/AppRun
@@ -12,7 +21,7 @@ mv myapp.png $MYAPP.AppDir/
 mkdir -p $MYAPP.AppDir/usr/bin/
 mv main $MYAPP.AppDir/usr/bin/myapp
 mkdir -p $MYAPP.AppDir/usr/lib/
-for file in $(ldd ../main | cut -d' ' -f3); do cp $file $MYAPP.AppDir/usr/lib/; done
+for file in $(cat passlibs.txt); do cp $file $MYAPP.AppDir/usr/lib/; done
 
 mkdir _out
 cd _out
