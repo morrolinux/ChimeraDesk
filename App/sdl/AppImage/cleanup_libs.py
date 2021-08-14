@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 
-with open("excludelist", 'r') as f:
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", default="ldd_libs.txt", help="input list of linked libraries")
+parser.add_argument("-e", default="excludelist", help="list of linked libraries to be excluded")
+parser.add_argument("-o", default="pass_libs.txt", help="output filtered of the exclusion list")
+args = parser.parse_args()
+
+# Read exclusion list
+with open(args.e, 'r') as f:
     exlist = f.readlines()
 
 exset = set()
@@ -11,7 +20,8 @@ for line in exlist:
         l = l.strip()
         exset.add(l)
 
-with open("ldd_paths.txt", 'r') as f:
+# Read input (ldd) libs
+with open(args.i, 'r') as f:
     ldd_paths = f.readlines()
 
 ldd_libs = set()
@@ -24,13 +34,16 @@ for line in ldd_paths:
     ldd_libs.add(lib)
     lib_paths[lib] = path
 
+# Filter out libs
 passlibs = ldd_libs - exset
+
 # print("LEN ORIG:", len(ldd_libs))
 # print("LEN PASS:", len(passlibs))
 # print(len(ldd_libs) - len(passlibs), "REMOVED")
 # print(passlibs)
 
-with open("passlibs.txt", "w") as f:
+# Write results to file
+with open(args.o, "w") as f:
     for lib in passlibs:
         print(lib, "=>" ,lib_paths[lib])
         f.write(lib_paths[lib] + "\n")
