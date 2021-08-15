@@ -6,7 +6,9 @@ env
 if [[ $TERM != "dumb" ]]; then export UI=0; else export UI=1; fi
 
 # try setting an arbitrary (often correct) DISPLAY variable if not set (ssh?)
-export DISPLAY=$(ps -u $(id -u) -o pid=|xargs -I{} cat /proc/{}/environ 2>/dev/null|tr '\0' '\n'|grep -m1 '^DISPLAY='|cut -d= -f2)
+if [[ -z $DISPLAY ]]; then 
+    export DISPLAY=$(ps -u $(id -u) -o pid=|xargs -I{} cat /proc/{}/environ 2>/dev/null|tr '\0' '\n'|grep -m1 '^DISPLAY='|cut -d= -f2)
+fi
 # see https://unix.stackexchange.com/questions/429092/what-is-the-best-way-to-find-the-current-display-and-xauthority-in-non-interacti
 
 # try to guess the screen resolution for ffmpeg
