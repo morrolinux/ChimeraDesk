@@ -48,6 +48,7 @@ special_codes = {
         27: Key.esc,
         127: Key.delete,
         1073742050: Key.alt_l,
+        1073742051: Key.cmd_l,
         1073742054: Key.alt_r,
         1073742048: Key.ctrl_l,
         1073742052: Key.ctrl_r,
