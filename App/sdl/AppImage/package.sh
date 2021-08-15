@@ -3,7 +3,7 @@
 PASS_LIBS=passlibs.txt
 LDD_LIBS=ldd_paths.txt
 EXCLUDE_LIST=excludelist
-MAIN=myapp
+MAIN=chimera
 
 # Build the program
 gcc -o $MAIN ../main.c `pkg-config --libs --cflags mpv sdl2` -std=c99

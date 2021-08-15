@@ -2,7 +2,7 @@
 
 # Credits to Simon Peter: https://gitlab.com/inkscape/inkscape/-/blob/158a1947ebe96272f9cbf6608c6696869979ae22/packaging/appimage/AppRun#L63
 
-MAIN="$APPDIR/usr/bin/myapp" ; shift
+MAIN="$APPDIR/usr/bin/chimera" ; shift
 BINARY_NAME=$(basename "$ARGV0")
 
 # Prefer to run the bundled executables (e.g., Python)

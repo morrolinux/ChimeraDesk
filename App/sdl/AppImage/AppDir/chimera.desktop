@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=HPRDP
-Exec=myapp
-Icon=myapp
+Name=ChimeraDesktop
+Exec=chimera
+Icon=chimera
 Type=Application
 Categories=Utility;
