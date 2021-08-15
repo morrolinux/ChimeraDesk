@@ -16,7 +16,7 @@ cp ../client/src/client.py AppDir/usr/bin/
 cat > kvm-client.desktop <<\EOF
 [Desktop Entry]
 Version=1.0
-Name=HPRDP-KVM
+Name=ChimeraDesktop-KVM
 Icon=keyboard
 Exec=client.sh
 Categories=Network;Utility;System;
@@ -27,7 +27,8 @@ MimeType=application/x-extension-fcstd;
 EOF
 
 export CONDA_PACKAGES="pip"
-export PIP_REQUIREMENTS="-e ../../client/"
+# export PIP_REQUIREMENTS="-e ../../client/"
+export PIP_REQUIREMENTS="pynput"
 export CONDA_PYTHON_VERSION="3.7"
 cd _out
 ./linuxdeploy-x86_64.AppImage --appdir ../AppDir -d ../kvm-client.desktop -i ../keyboard.png --plugin conda --output appimage
