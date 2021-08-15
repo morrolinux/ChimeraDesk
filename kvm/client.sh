@@ -6,7 +6,8 @@ env
 if [[ $TERM != "dumb" ]]; then export UI=0; else export UI=1; fi
 
 # try setting an arbitrary (often correct) DISPLAY variable if not set (ssh?)
-if [[ -z $DISPLAY ]]; then export DISPLAY=:0.0; fi
+export DISPLAY=$(ps -u $(id -u) -o pid=|xargs -I{} cat /proc/{}/environ 2>/dev/null|tr '\0' '\n'|grep -m1 '^DISPLAY='|cut -d= -f2)
+# see https://unix.stackexchange.com/questions/429092/what-is-the-best-way-to-find-the-current-display-and-xauthority-in-non-interacti
 
 # try to guess the screen resolution for ffmpeg
 Xres=$(xrandr --current | grep '*' | uniq | awk '{print $1}' | cut -d 'x' -f1)
@@ -26,7 +27,8 @@ if [[ $ABORT -eq 1 ]]; then exit; fi
 
 # Launch KVM client process and store its PID for later termination
 if [[ -z $APPDIR ]]; then
-    python -m client &
+    SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+    python $SCRIPTPATH/client/src/client.py &
 else
     $APPDIR/usr/bin/python $APPDIR/usr/bin/client.py &
 fi
@@ -44,7 +46,7 @@ fi
 
 # If no ffmpeg config file is found, generate a default one
 if [[ ! -f ~/.config/hprdpvideo.sh ]]; then 
-    echo "echo \$BASHPID > /tmp/ffmpeg.pid; ffmpeg -f x11grab -draw_mouse 0 -s ${Xres}x${Yres} -framerate 30 -i $DISPLAY  -c:v libx264 -preset medium -profile high -pix_fmt yuv420p -tune zerolatency -b:v 2000K -minrate 2000K -maxrate 2000K -bufsize 512k -f mpegts tcp://127.0.0.1:12345" > ~/.config/hprdpvideo.sh
+    echo "echo \$BASHPID > /tmp/ffmpeg.pid; ffmpeg -f x11grab -draw_mouse 0 -s ${Xres}x${Yres} -framerate 30 -i \$DISPLAY  -c:v libx264 -preset medium -profile high -pix_fmt yuv420p -tune zerolatency -b:v 2000K -minrate 2000K -maxrate 2000K -bufsize 512k -f mpegts tcp://127.0.0.1:12345" > ~/.config/hprdpvideo.sh
 fi
 
 # Give the user the option to terminate screen sharing
