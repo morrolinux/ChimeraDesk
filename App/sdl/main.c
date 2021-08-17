@@ -76,31 +76,45 @@ static int send_message(const char *msg)
 // translate to remote screen coordinates taking into account window size and borders
 void translate_mouse_coords(int *x, int *y)
 {
-  int osd_border_top, osd_border_left, w, h, video_w, video_h, nx, ny;
-  mpv_get_property(mpv, "osd-dimensions/mt", MPV_FORMAT_INT64, &osd_border_top); 
-  mpv_get_property(mpv, "osd-dimensions/ml", MPV_FORMAT_INT64, &osd_border_left); 
-  mpv_get_property(mpv, "osd-width", MPV_FORMAT_INT64, &w); 
-  mpv_get_property(mpv, "osd-height", MPV_FORMAT_INT64, &h); 
+  int osd_border_top, osd_border_left, osd_w, osd_h, win_w, win_h, video_w, video_h, nx, ny;
+  float video_ar, win_ar;
   mpv_get_property(mpv, "video-params/w", MPV_FORMAT_INT64, &video_w); 
   mpv_get_property(mpv, "video-params/h", MPV_FORMAT_INT64, &video_h); 
+  SDL_GetWindowSize(window, &win_w, &win_h);
   // safeguard for mouse events before video feed
-  if (video_w <= 0 || video_h <= 0)
+  if (video_w <= 0 || video_h <= 0 || win_w <= 0 || win_h <= 0)
     return;
 
-  int win_w, win_h;
-  SDL_GetWindowSize(window, &win_w, &win_h);
-  printf("SDL Window Size: %d x %d\n", win_w, win_h);
+  video_ar = video_w/(float)video_h;
+  win_ar = win_w/(float)win_h;
 
-  w -= osd_border_left * 2;
-  h -= osd_border_top * 2;
+  if (win_ar > video_ar){
+      osd_h = win_h;
+      osd_w = win_h * video_ar;
+  } else {
+      osd_w = win_w;
+      osd_h = win_w / video_ar;
+  }
+
+  osd_border_left = (win_w - osd_w)/2;
+  osd_border_top = (win_h - osd_h)/2;
   
-  nx = (*x - osd_border_left) * video_w / w;
-  ny = (*y - osd_border_top) * video_h / h;
+  nx = (*x - osd_border_left) * video_w / osd_w;
+  ny = (*y - osd_border_top) * video_h / osd_h;
 
   nx = (nx < 0) ? 0: nx;
   ny = (ny < 0) ? 0: ny;
 
-  // printf("\ntranslate_mouse_coords(%d, %d): \nosd_b_l: %d, osd_b_t: %d \nw: %d, h: %d \nv_w: %d, v_h: %d \nnx: %d, ny: %d\n", *x, *y, osd_border_left, osd_border_top, w, h, video_w, video_h, nx, ny);
+  // printf("\ntranslate_mouse_coords(%d, %d): \
+  //   \nosd_border_left: %d, osd_border_top: %d \
+  //   \nosd_w: %d, osd_h: %d \
+  //   \nvideo_w: %d, video_h: %d \
+  //   \nnx: %d, ny: %d\n", \
+  //   *x, *y, \
+  //   osd_border_left, osd_border_top, \
+  //   osd_w, osd_h, \
+  //   video_w, video_h, \
+  //   nx, ny);
   
   *x = nx;
   *y = ny;
