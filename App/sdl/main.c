@@ -95,6 +95,8 @@ void translate_mouse_coords(int *x, int *y)
 
   nx = (nx < 0) ? 0: nx;
   ny = (ny < 0) ? 0: ny;
+
+  // printf("\ntranslate_mouse_coords(%d, %d): \nosd_b_l: %d, osd_b_t: %d \nw: %d, h: %d \nv_w: %d, v_h: %d \nnx: %d, ny: %d\n", *x, *y, osd_border_left, osd_border_top, w, h, video_w, video_h, nx, ny);
   
   *x = nx;
   *y = ny;
