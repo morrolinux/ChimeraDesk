@@ -19,6 +19,7 @@
 static Uint32 wakeup_on_mpv_render_update, wakeup_on_mpv_events;
 
 mpv_handle *mpv;
+SDL_Window *window;
 const char *btn_string[] = {NULL, "Button.left", "Button.middle", "Button.right"};
 
 // TCP Server
@@ -82,10 +83,13 @@ void translate_mouse_coords(int *x, int *y)
   mpv_get_property(mpv, "osd-height", MPV_FORMAT_INT64, &h); 
   mpv_get_property(mpv, "video-params/w", MPV_FORMAT_INT64, &video_w); 
   mpv_get_property(mpv, "video-params/h", MPV_FORMAT_INT64, &video_h); 
-  
   // safeguard for mouse events before video feed
   if (video_w <= 0 || video_h <= 0)
     return;
+
+  int win_w, win_h;
+  SDL_GetWindowSize(window, &win_w, &win_h);
+  printf("SDL Window Size: %d x %d\n", win_w, win_h);
 
   w -= osd_border_left * 2;
   h -= osd_border_top * 2;
@@ -140,8 +144,8 @@ int main(int argc, char *argv[])
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
         die("SDL init failed");
 
-    SDL_Window *window =
-        SDL_CreateWindow("hi", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    window =
+        SDL_CreateWindow("ChimeraDesk", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                          1000, 500, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN |
                                     SDL_WINDOW_RESIZABLE);
     if (!window)
