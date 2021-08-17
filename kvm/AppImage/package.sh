@@ -16,7 +16,7 @@ cp ../client/src/client.py AppDir/usr/bin/
 cat > kvm-client.desktop <<\EOF
 [Desktop Entry]
 Version=1.0
-Name=ChimeraDesktop-KVM
+Name=ChimeraDesk-KVM
 Icon=keyboard
 Exec=client.sh
 Categories=Network;Utility;System;
