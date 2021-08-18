@@ -8,6 +8,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
 
 #include <SDL.h>
 
@@ -74,16 +76,20 @@ static int send_message(const char *msg)
 }
 
 // translate to remote screen coordinates taking into account window size and borders
-void translate_mouse_coords(int *x, int *y)
+int translate_mouse_coords(int *x, int *y)
 {
   int osd_border_top, osd_border_left, osd_w, osd_h, win_w, win_h, video_w, video_h, nx, ny;
   float video_ar, win_ar;
+
   mpv_get_property(mpv, "video-params/w", MPV_FORMAT_INT64, &video_w); 
   mpv_get_property(mpv, "video-params/h", MPV_FORMAT_INT64, &video_h); 
   SDL_GetWindowSize(window, &win_w, &win_h);
+
   // safeguard for mouse events before video feed
-  if (video_w <= 0 || video_h <= 0 || win_w <= 0 || win_h <= 0)
-    return;
+  if (video_w <= 0 || video_h <= 0 || win_w <= 0 || win_h <= 0){
+    printf("translate_mouse_coords: video/win size values cannot be 0\n");
+    return -1;
+  }
 
   video_ar = video_w/(float)video_h;
   win_ar = win_w/(float)win_h;
@@ -95,46 +101,53 @@ void translate_mouse_coords(int *x, int *y)
       osd_w = win_w;
       osd_h = win_w / video_ar;
   }
+  
+  if (osd_w <= 0 || osd_h <= 0){
+      printf("osd w/h wrong value: %d %d\n", osd_w, osd_h);
+      return -1;
+  }
 
   osd_border_left = (win_w - osd_w)/2;
   osd_border_top = (win_h - osd_h)/2;
-  
+
   nx = (*x - osd_border_left) * video_w / osd_w;
   ny = (*y - osd_border_top) * video_h / osd_h;
-
+  
   nx = (nx < 0) ? 0: nx;
   ny = (ny < 0) ? 0: ny;
 
   // printf("\ntranslate_mouse_coords(%d, %d): \
   //   \nosd_border_left: %d, osd_border_top: %d \
+  //   \nwin_w: %d, win_h: %d \
   //   \nosd_w: %d, osd_h: %d \
   //   \nvideo_w: %d, video_h: %d \
   //   \nnx: %d, ny: %d\n", \
   //   *x, *y, \
   //   osd_border_left, osd_border_top, \
+  //   win_w, win_h, \
   //   osd_w, osd_h, \
   //   video_w, video_h, \
   //   nx, ny);
   
   *x = nx;
   *y = ny;
+  return 0;
 }
+
+int guard(int n, char * err) { if (n == -1) { perror(err); exit(1); } return n; }
 
 int main(int argc, char *argv[])
 {
     // Init TCP server
-    server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_fd < 0) on_error("Could not create socket\n");
+    server_fd = guard(socket(AF_INET, SOCK_STREAM, 0), "could not create TCP listening socket");
+    int server_flags = guard(fcntl(server_fd, F_GETFL), "could not get flags on TCP listening socket");
+    guard(fcntl(server_fd, F_SETFL, server_flags | O_NONBLOCK), "could not set TCP listening socket to be non-blocking");
     server.sin_family = AF_INET;
     server.sin_port = htons(PORT);
     server.sin_addr.s_addr = htonl(INADDR_ANY);
-    int opt_val = 1;
-    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof opt_val);
-    err = bind(server_fd, (struct sockaddr *) &server, sizeof(server));
-    if (err < 0) on_error("Could not bind socket\n");
-    err = listen(server_fd, 128);
-    if (err < 0) on_error("Could not listen on socket\n");
-    printf("TCP server is listening on port %d\n", PORT);
+    guard(bind(server_fd, (struct sockaddr *) &server, sizeof(server)), "could not bind");
+    guard(listen(server_fd, 128), "could not listen");
+    printf("TCP server is listening on port %d. Waiting for client to connect...\n", PORT);
     socklen_t client_len = sizeof(client);
 
     mpv = mpv_create();
@@ -213,19 +226,32 @@ int main(int argc, char *argv[])
     //  users which run OpenGL on a different thread.)
     mpv_render_context_set_update_callback(mpv_gl, on_mpv_render_update, NULL);
 
-    // Wait for TCP connection
-    client_fd = accept(server_fd, (struct sockaddr *) &client, &client_len);
-    if (client_fd < 0) on_error("Could not establish new connection\n");
+    // Wait for TCP connection.
+    // We do busy wait instead of a blocking wait BECAUSE this is a  
+    // single-threaded application and we don't want to block the UI thread
+    // or the OS will think the program freezed and prompt the user for termination.
+    while (1) {
+        client_fd = accept(server_fd, NULL, NULL);
+        if (client_fd == -1) {
+            if (errno == EWOULDBLOCK) {
+                sleep(0.005);  // TODO: maybe find something better
+            } else {
+                perror("error when accepting connection");
+                exit(1);
+            }
+        } else {
+            printf("Client connected!\n");
+            // flush all local events prior to client connection as they are not to be forwarded
+            SDL_PumpEvents();
+            SDL_FlushEvents(SDL_KEYDOWN, SDL_DROPCOMPLETE);
+            break;
+        }
+    }
 
-    // Read TCP client message
-    // int read = recv(client_fd, buf, BUFFER_SIZE, 0);
-    // if (!read) break; // done reading
-    // if (read < 0) on_error("Client read failed\n");
-	
-    // Play network video stream
+    // Play network video stream (async wait)
     const char *cmd[] = {"loadfile", "tcp://0.0.0.0:12345?listen", NULL};
     mpv_command_async(mpv, 0, cmd);
-
+	
     const char *action;
     int x, y;
     int mouse_status = SDL_MOUSEBUTTONUP;
@@ -246,14 +272,14 @@ int main(int argc, char *argv[])
             break;
         case SDL_MOUSEWHEEL:
             SDL_GetMouseState(&x, &y);
-            translate_mouse_coords(&x, &y);
+            if(translate_mouse_coords(&x, &y) < 0) break;
             snprintf(buffer, MSGLEN, "mouse %d %d %s %d %d", x, y, "scroll", -event.wheel.x, event.wheel.y);  
             send_message(buffer);
             break;
         case SDL_MOUSEMOTION: 
             // if (mouse_status != SDL_MOUSEBUTTONDOWN) break;  // perf. optimization if slow network
             SDL_GetMouseState(&x, &y);
-            translate_mouse_coords(&x, &y);
+            if(translate_mouse_coords(&x, &y) < 0) break;
             snprintf(buffer, MSGLEN, "mouse %d %d %s", x, y, "move", NULL);  
             send_message(buffer);
             break;
@@ -266,7 +292,7 @@ int main(int argc, char *argv[])
 
             // get mouse coordinates
             SDL_GetMouseState(&x, &y);
-            translate_mouse_coords(&x, &y);
+            if(translate_mouse_coords(&x, &y) < 0) break;
             snprintf(buffer, MSGLEN, "mouse %d %d %s %s", x, y, action, btn_string[mouse_event.button], NULL);  
             send_message(buffer);
             break;      
