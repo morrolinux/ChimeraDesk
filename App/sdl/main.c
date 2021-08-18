@@ -280,7 +280,7 @@ int main(int argc, char *argv[])
             // if (mouse_status != SDL_MOUSEBUTTONDOWN) break;  // perf. optimization if slow network
             SDL_GetMouseState(&x, &y);
             if(translate_mouse_coords(&x, &y) < 0) break;
-            snprintf(buffer, MSGLEN, "mouse %d %d %s", x, y, "move", NULL);  
+            snprintf(buffer, MSGLEN, "mouse %d %d %s", x, y, "move");  
             send_message(buffer);
             break;
         case SDL_MOUSEBUTTONUP:
@@ -293,7 +293,7 @@ int main(int argc, char *argv[])
             // get mouse coordinates
             SDL_GetMouseState(&x, &y);
             if(translate_mouse_coords(&x, &y) < 0) break;
-            snprintf(buffer, MSGLEN, "mouse %d %d %s %s", x, y, action, btn_string[mouse_event.button], NULL);  
+            snprintf(buffer, MSGLEN, "mouse %d %d %s %s", x, y, action, btn_string[mouse_event.button]);  
             send_message(buffer);
             break;      
         case SDL_KEYUP:
