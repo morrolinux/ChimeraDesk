@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
 
     window =
         SDL_CreateWindow("ChimeraDesk", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                         1000, 500, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN |
+                         1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN |
                                     SDL_WINDOW_RESIZABLE);
     if (!window)
         die("failed to create SDL window");
