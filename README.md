@@ -14,8 +14,11 @@ A simple, fast and flexible DIY Remote Desktop software
 
 ## Infrastructure 
 You can use this ChimeraDesk 
-- In **p2p mode** `Local --> Remote` (RDP-style) if you can/want to open ports on your router, or
-- In **centralized mode** `Local --> Public Server <-- Remote` (TW-style) if you can't/don't want to open ports on your router. 
+- In **centralized mode** `Local --> Public Server <-- Remote` (TW-style) if you can't/don't want to open ports on your router, or
+- In **p2p mode** `Local --> Remote` (RDP-style) if you can/want to open ports on your router.
+
+<img src="https://github.com/morrolinux/ChimeraDesk/raw/main/media/ChimeraDesk-Infrastructure.png" width="100%" height="100%"> 
+
 
 ### Setup for centralized mode (optional)
 If you need to connect between two NAT networks without opening ports on either side (like t.w. does)
