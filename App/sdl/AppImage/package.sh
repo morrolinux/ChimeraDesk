@@ -6,7 +6,7 @@ EXCLUDE_LIST=excludelist
 MAIN=chimera
 
 # Build the program
-gcc -o $MAIN ../main.c `pkg-config --libs --cflags mpv sdl2` -std=c99
+gcc -o $MAIN ../main.c `pkg-config --libs --cflags mpv sdl2 SDL2_ttf` -std=c99
 if [[ $? -ne 0 ]]; then return; fi
 
 # Filter out breaking shared libs

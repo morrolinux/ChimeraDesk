@@ -79,10 +79,10 @@ Example building on `Ubuntu 18.04`
 ### Build the App
 On `Ubuntu 18.04` You need the latest `libmpv-dev` so add this PPA first: `sudo add-apt-repository ppa:mc3man/bionic-media`
 
-1. Install build dependencies: `sudo apt install git gcc libmpv-dev libsdl2-dev`
+1. Install build dependencies: `sudo apt install git gcc libmpv-dev libsdl2-dev libsdl2-ttf-dev`
 2. Clone this repo: `git clone https://github.com/morrolinux/ChimeraDesk.git`
 3. Move to the App directory: `ChimeraDesk/App/sdl/`
-4. And build it with: `gcc -o main main.c $(pkg-config --libs --cflags mpv sdl2) -std=c99`
+4. And build it with: `gcc -o main main.c $(pkg-config --libs --cflags mpv sdl2 SDL2_ttf) -std=c99`
 
 If everything went fine (no errors) you can even 
 **build the AppImage:**

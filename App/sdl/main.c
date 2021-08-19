@@ -1,4 +1,4 @@
-// Build with: gcc -o main main.c `pkg-config --libs --cflags mpv sdl2` -std=c99
+// Build with: gcc -o main main.c `pkg-config --libs --cflags mpv sdl2 SDL2_ttf` -std=c99
 
 #include <stddef.h>
 #include <stdio.h>
@@ -12,6 +12,7 @@
 #include <fcntl.h>
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 #include <mpv/client.h>
 #include <mpv/render_gl.h>
@@ -22,6 +23,7 @@ static Uint32 wakeup_on_mpv_render_update, wakeup_on_mpv_events;
 
 mpv_handle *mpv;
 SDL_Window *window;
+SDL_Renderer *splash_renderer;
 const char *btn_string[] = {NULL, "Button.left", "Button.middle", "Button.right"};
 
 // TCP Server
@@ -226,11 +228,47 @@ int main(int argc, char *argv[])
     //  users which run OpenGL on a different thread.)
     mpv_render_context_set_update_callback(mpv_gl, on_mpv_render_update, NULL);
 
+    // prepare a splashscreen to show to the user while waiting for a client to connect 
+    TTF_Init();
+    splash_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    TTF_Font* sans = TTF_OpenFont("fonts/FreeSans.ttf", 48);
+    SDL_Color white = {255, 255, 255};
+    SDL_Surface* surface_message = TTF_RenderText_Solid(sans, "Waiting for a client to connect...", white); 
+    SDL_Surface* surface_logo = SDL_LoadBMP("logo.bmp");
+    SDL_Texture* splash_message = SDL_CreateTextureFromSurface(splash_renderer, surface_message);
+    SDL_Texture* splash_logo = SDL_CreateTextureFromSurface(splash_renderer, surface_logo);
+    SDL_FreeSurface(surface_message);
+    SDL_FreeSurface(surface_logo);
+
+    SDL_Rect message_rect;
+    message_rect.x = 0;   
+    message_rect.y = 0; 
+    message_rect.w = 480;
+    message_rect.h = 40; 
+
+    SDL_Rect logo_rect;
+    logo_rect.x = 460; 
+    logo_rect.y = 180; 
+    logo_rect.w = 360;
+    logo_rect.h = 360; 
+
     // Wait for TCP connection.
     // We do busy wait instead of a blocking wait BECAUSE this is a  
     // single-threaded application and we don't want to block the UI thread
     // or the OS will think the program freezed and prompt the user for termination.
     while (1) {
+        SDL_RenderClear(splash_renderer);
+        SDL_RenderCopy(splash_renderer, splash_logo, NULL, &logo_rect);
+        SDL_RenderCopy(splash_renderer, splash_message, NULL, &message_rect);
+        SDL_RenderPresent(splash_renderer);
+
+        SDL_Event e;
+        if (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                exit(0);
+            }
+        }
+
         client_fd = accept(server_fd, NULL, NULL);
         if (client_fd == -1) {
             if (errno == EWOULDBLOCK) {
@@ -361,8 +399,11 @@ done:
     // Destroy the GL renderer and all of the GL objects it allocated. If video
     // is still running, the video track will be deselected.
     mpv_render_context_free(mpv_gl);
-
     mpv_detach_destroy(mpv);
+
+    // Destroy "splash screen" resources
+    SDL_DestroyRenderer(splash_renderer);
+    SDL_DestroyTexture(splash_message);
 
     printf("properly terminated\n");
     return 0;
