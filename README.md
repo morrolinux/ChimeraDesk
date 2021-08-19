@@ -3,7 +3,9 @@
 # ChimeraDesk 
 
 A simple, fast and flexible DIY Remote Desktop software 
- 
+
+<img src="https://github.com/morrolinux/ChimeraDesk/raw/main/media/ChimeraDesk_demo.gif" width="100%" height="100%"> 
+
 ## Glossary
 - `remote computer` : the one you want to connect to
 - `local computer` : the one you can physically type on
