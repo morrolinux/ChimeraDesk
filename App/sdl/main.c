@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
     TTF_Font* sans = TTF_OpenFont("fonts/FreeSans.ttf", 48);
     SDL_Color white = {255, 255, 255};
     SDL_Surface* surface_message = TTF_RenderText_Solid(sans, "Waiting for a client to connect...", white); 
-    SDL_Surface* surface_logo = SDL_LoadBMP("logo.bmp");
+    SDL_Surface* surface_logo = SDL_LoadBMP("bmp/logo.bmp");
     SDL_Texture* splash_message = SDL_CreateTextureFromSurface(splash_renderer, surface_message);
     SDL_Texture* splash_logo = SDL_CreateTextureFromSurface(splash_renderer, surface_logo);
     SDL_FreeSurface(surface_message);

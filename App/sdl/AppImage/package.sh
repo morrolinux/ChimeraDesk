@@ -20,6 +20,10 @@ chmod +x AppDir/AppRun
 
 mkdir -p AppDir/usr/bin/
 mkdir -p AppDir/usr/lib/
+mkdir -p AppDir/fonts/
+mkdir -p AppDir/bmp
+cp ../fonts/* AppDir/fonts/
+cp ../bmp/* AppDir/bmp/
 mv $MAIN AppDir/usr/bin/
 for file in $(cat $PASS_LIBS); do cp $file AppDir/usr/lib/; done
 
