@@ -12,7 +12,7 @@ A simple, fast and flexible DIY Remote Desktop software
 - `remote/pubblic server` : (for reverse ssh configuration) it can be a VPS or generally any public server under no NAT network 
 
 ## Requirements
-- On the remote pc: `ffmpeg notify-send`
+- On the remote pc: `ffmpeg libnotify-bin`
 
 ## Infrastructure 
 You can use this ChimeraDesk 
