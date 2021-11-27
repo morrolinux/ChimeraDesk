@@ -78,13 +78,20 @@ You are free to change anything at your will, but be sure to keep the `echo $BAS
 ## Building Instruction
 Example building on `Ubuntu 18.04`
 
-### Build the App
+### Build the App on GNU/Linux
 On `Ubuntu 18.04` You need the latest `libmpv-dev` so add this PPA first: `sudo add-apt-repository ppa:mc3man/bionic-media`
 
 1. Install build dependencies: `sudo apt install git gcc libmpv-dev libsdl2-dev libsdl2-ttf-dev`
 2. Clone this repo: `git clone https://github.com/morrolinux/ChimeraDesk.git`
 3. Move to the App directory: `ChimeraDesk/App/sdl/`
 4. And build it with: `gcc -o main main.c $(pkg-config --libs --cflags mpv sdl2 SDL2_ttf) -std=c99`
+
+### Build the App on MacOS
+1. Install `brew`
+2. Install the required deps: `brew install mpv sdl2 sdl2_image sdl2_ttf pkg-config`
+3. Clone this repo: `git clone https://github.com/morrolinux/ChimeraDesk.git`
+4. Move to the App directory: `ChimeraDesk/App/sdl/`
+5. And build it with: `gcc -o main main.c $(pkg-config --libs --cflags mpv sdl2 SDL2_ttf) -std=c99`
 
 If everything went fine (no errors) you can even 
 **build the AppImage:**
