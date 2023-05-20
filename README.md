@@ -86,6 +86,11 @@ On `Ubuntu 18.04` You need the latest `libmpv-dev` so add this PPA first: `sudo 
 3. Move to the App directory: `ChimeraDesk/App/sdl/`
 4. And build it with: `gcc -o main main.c $(pkg-config --libs --cflags mpv sdl2 SDL2_ttf) -std=c99`
 
+If everything went fine (no errors) you can even 
+**build the AppImage:**
+1. `cd AppImage && bash package.sh`
+2. The result will be under `_out`.
+
 ### Build the App on MacOS
 1. Install `brew`
 2. Install the required deps: `brew install gcc mpv sdl2 sdl2_image sdl2_ttf pkg-config`
@@ -95,7 +100,7 @@ On `Ubuntu 18.04` You need the latest `libmpv-dev` so add this PPA first: `sudo 
 6. Patch `main.c`: `sed s/mpv_detach_destroy/mpv_terminate_destroy/g -i main.c`
 7. And build it with: `/opt/homebrew/bin/gcc-13 -o main main.c $(pkg-config --libs --cflags mpv sdl2 SDL2_ttf) -std=c99`
 
-If everything went fine (no errors) you can even 
+If everything went fine (no errors) you can now 
 **run the program:**
 
 1. First you'll need to `export DYLD_LIBRARY_PATH=DYLD_LIBRARY_PATH:"/System/Volumes/Data/opt/homebrew/Cellar/mpv/0.35.1_2/lib/"`
