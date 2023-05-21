@@ -97,8 +97,7 @@ If everything went fine (no errors) you can even
 3. Set the correct env var. according to your installed mpv version, like: `export PKG_CONFIG_PATH=/System/Volumes/Data/opt/homebrew/Cellar/mpv/0.35.1_2/lib/pkgconfig/`
 4. Clone this repo: `git clone https://github.com/morrolinux/ChimeraDesk.git`
 5. Move to the App directory: `ChimeraDesk/App/sdl/`
-6. Patch `main.c`: `sed s/mpv_detach_destroy/mpv_terminate_destroy/g -i main.c`
-7. And build it with: `/opt/homebrew/bin/gcc-13 -o main main.c $(pkg-config --libs --cflags mpv sdl2 SDL2_ttf) -std=c99`
+6. And build it with: `/opt/homebrew/bin/gcc-13 -o main main.c $(pkg-config --libs --cflags mpv sdl2 SDL2_ttf) -std=c99`
 
 If everything went fine (no errors) you can now 
 **run the program:**
