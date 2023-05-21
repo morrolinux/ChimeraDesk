@@ -399,7 +399,7 @@ done:
     // Destroy the GL renderer and all of the GL objects it allocated. If video
     // is still running, the video track will be deselected.
     mpv_render_context_free(mpv_gl);
-    mpv_detach_destroy(mpv);
+    mpv_terminate_destroy(mpv);
 
     // Destroy "splash screen" resources
     SDL_DestroyRenderer(splash_renderer);
