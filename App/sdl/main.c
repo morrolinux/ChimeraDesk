@@ -115,7 +115,7 @@ int translate_mouse_coords(int *x, int *y)
       return -1;
   }
 
-  osd_border_left = OSD_BORDER_LEFT_ENABLED * (win_w - osd_w)/2;
+  osd_border_left = (win_w - osd_w)/2;
   osd_border_top = (win_h - osd_h)/2;
 
   printf("osd_border_left: %d\n", osd_border_left);
