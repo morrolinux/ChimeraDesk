@@ -89,7 +89,7 @@ int translate_mouse_coords(int *x, int *y)
 
   if (video_w == 0 && video_h > 0) {
     printf("WARN: video_w size incorrect! Assuming remote has a 16:9 aspect ratio.\n");
-    video_w = video_h*(16/9);
+    video_w = ((float)16/9) * video_h;
   }
 
   // safeguard for mouse events before video feed
@@ -109,6 +109,8 @@ int translate_mouse_coords(int *x, int *y)
       osd_w = win_w;
       osd_h = win_w / video_ar;
   }
+
+  // printf("video_w: %d video_h: %d\nwin_w: %d win_h: %d \nosd_w: %d osd_h: %d\n", video_w, video_h, win_w, win_h, osd_w, osd_h);
   
   if (osd_w <= 0 || osd_h <= 0){
       printf("osd w/h wrong value: %d %d\n", osd_w, osd_h);
@@ -117,9 +119,6 @@ int translate_mouse_coords(int *x, int *y)
 
   osd_border_left = (win_w - osd_w)/2;
   osd_border_top = (win_h - osd_h)/2;
-
-  printf("osd_border_left: %d\n", osd_border_left);
-  // osd_border_left = 0;
 
   nx = (*x - osd_border_left) * video_w / osd_w;
   ny = (*y - osd_border_top) * video_h / osd_h;
