@@ -87,9 +87,15 @@ int translate_mouse_coords(int *x, int *y)
   mpv_get_property(mpv, "video-params/h", MPV_FORMAT_INT64, &video_h); 
   SDL_GetWindowSize(window, &win_w, &win_h);
 
+  if (video_w == 0 && video_h > 0) {
+    printf("WARN: video_w size incorrect! Assuming remote has a 16:9 aspect ratio.\n");
+    video_w = video_h*(16/9);
+  }
+
   // safeguard for mouse events before video feed
   if (video_w <= 0 || video_h <= 0 || win_w <= 0 || win_h <= 0){
     printf("translate_mouse_coords: video/win size values cannot be 0\n");
+    printf("video_W: %d video_h: %d win_w: %d win_h: %d\n", video_w, video_h, win_w, win_h);
     return -1;
   }
 
@@ -109,8 +115,11 @@ int translate_mouse_coords(int *x, int *y)
       return -1;
   }
 
-  osd_border_left = (win_w - osd_w)/2;
+  osd_border_left = OSD_BORDER_LEFT_ENABLED * (win_w - osd_w)/2;
   osd_border_top = (win_h - osd_h)/2;
+
+  printf("osd_border_left: %d\n", osd_border_left);
+  // osd_border_left = 0;
 
   nx = (*x - osd_border_left) * video_w / osd_w;
   ny = (*y - osd_border_top) * video_h / osd_h;
