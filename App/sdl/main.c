@@ -230,7 +230,24 @@ int main(int argc, char *argv[])
 
     // prepare a splashscreen to show to the user while waiting for a client to connect 
     TTF_Init();
-    splash_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    
+    // get the correct (opengl) driver. On MacOS, index -1 would default to Metal.
+    int driverIdx = -1;
+    int nRD = SDL_GetNumRenderDrivers();
+    for(int i=0; i<nRD; i++)
+    {
+        SDL_RendererInfo info;
+        if(!SDL_GetRenderDriverInfo(i, &info))
+        {
+            if(!strcmp(info.name, "opengl"))
+            {
+                driverIdx = i;
+            }
+        }
+    }
+
+    splash_renderer = SDL_CreateRenderer(window, driverIdx, SDL_RENDERER_ACCELERATED);
+
     TTF_Font* sans = TTF_OpenFont("fonts/FreeSans.ttf", 48);
     SDL_Color white = {255, 255, 255};
     SDL_Surface* surface_message = TTF_RenderText_Solid(sans, "Waiting for a client to connect...", white); 
