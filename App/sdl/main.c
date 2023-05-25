@@ -88,7 +88,7 @@ int translate_mouse_coords(int *x, int *y)
   SDL_GetWindowSize(window, &win_w, &win_h);
 
   if (video_w == 0 && video_h > 0) {
-    printf("WARN: video_w size incorrect! Assuming remote has a 16:9 aspect ratio.\n");
+    // printf("WARN: video_w size incorrect! Assuming remote has a 16:9 aspect ratio.\n");
     video_w = ((float)16/9) * video_h;
   }
 
@@ -148,6 +148,22 @@ int guard(int n, char * err) { if (n == -1) { perror(err); exit(1); } return n; 
 
 int main(int argc, char *argv[])
 {
+    const char *url; 
+    if(argv[1] && (!strcmp(argv[1], "UDP") || !strcmp(argv[1], "udp"))){
+        printf("Listening for video stream on UDP.\n\
+        For the audio, please run this command:\n\
+        ffplay -f s16le -ar 44100 -ac 2 -probesize 32 -analyzeduration 0 -sync ext \"udp://0.0.0.0:12344\"\n\n");
+        url = "udp://0.0.0.0:12345?overrun_nonfatal=1";
+    } else if(argv[1] && (!strcmp(argv[1], "TCP") || !strcmp(argv[1], "tcp"))){
+        printf("Listening for video stream on TCP.\n\
+        For the audio, please run this command:\n\
+        ffplay -f s16le -ar 44100 -ac 2 -probesize 32 -analyzeduration 0 -sync ext \"tcp://0.0.0.0:12344?listen\"\n\n");
+        url = "tcp://0.0.0.0:12345?listen";
+    } else {
+        printf("Please specify video stream protocol.\nUsage: ./ChimeraDesk {TCP|UDP}\n");
+        exit(1);
+    }
+
     // Init TCP server
     server_fd = guard(socket(AF_INET, SOCK_STREAM, 0), "could not create TCP listening socket");
     int server_flags = guard(fcntl(server_fd, F_GETFL), "could not get flags on TCP listening socket");
@@ -157,7 +173,9 @@ int main(int argc, char *argv[])
     server.sin_addr.s_addr = htonl(INADDR_ANY);
     guard(bind(server_fd, (struct sockaddr *) &server, sizeof(server)), "could not bind");
     guard(listen(server_fd, 128), "could not listen");
-    printf("TCP server is listening on port %d. Waiting for client to connect...\n", PORT);
+
+    printf("Server is listening on port tcp/%d. Waiting for client to connect...\n", PORT);
+
     socklen_t client_len = sizeof(client);
 
     mpv = mpv_create();
@@ -307,12 +325,19 @@ int main(int argc, char *argv[])
             // flush all local events prior to client connection as they are not to be forwarded
             SDL_PumpEvents();
             SDL_FlushEvents(SDL_KEYDOWN, SDL_DROPCOMPLETE);
+
+            char buffer[MSGLEN];
+            snprintf(buffer, MSGLEN, "video start %s", url);         
+            send_message(buffer);
+
             break;
         }
     }
 
     // Play network video stream (async wait)
-    const char *cmd[] = {"loadfile", "tcp://0.0.0.0:12345?listen", NULL};
+    // const char *cmd[] = {"loadfile", "tcp://0.0.0.0:12345?listen", NULL}; // TCP
+    // const char *cmd[] = {"loadfile", "udp://0.0.0.0:12345?overrun_nonfatal=1", NULL};   // UDP
+    const char *cmd[] = {"loadfile", url, NULL};   // UDP
     mpv_command_async(mpv, 0, cmd);
 	
     const char *action;
@@ -429,6 +454,10 @@ done:
     // Destroy "splash screen" resources
     SDL_DestroyRenderer(splash_renderer);
     SDL_DestroyTexture(splash_message);
+
+    char buffer[MSGLEN];
+    snprintf(buffer, MSGLEN, "video stop");         
+    send_message(buffer);
 
     printf("properly terminated\n");
     return 0;
