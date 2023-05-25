@@ -45,7 +45,7 @@ In such case `-p 8080` must be omitted unless you decide to open port `8080` to 
  
 1. Connect to the remote computer and forward local requests on ports `12345` and `12346` to localhost:
 ```
-ssh -R 12345:127.0.0.1:12345 -R 12346:127.0.0.1:12346 user@IP -p 8080
+ssh -R 12344:127.0.0.1:12344 -R 12345:127.0.0.1:12345 -R 12346:127.0.0.1:12346 user@IP -p 8080
 # This will also yield a shell you can use on step 3.
 ```
 2. Launch `ChimeraDesk-x86_64.AppImage` on your local computer.
@@ -57,6 +57,22 @@ That's it!
 You should now be able to see and control the remote screen.
 
 **Please note that the 'viewer' AppImage can be twice as heavy on the CPU compared to the natively built executable. Check the building instructions if you care about efficiency. It's simple enough and performs much better :)**
+
+
+### Streaming desktop audio
+Due to video + audio muxing latency issues, desktop audio needs to be carried over by a separate stream. At this point in time I've not integrated this feature in ChimeraDesk yet, but you can do it indepentently with ffmpeg.
+
+On the local (controller) machine, start listening with:
+```
+ffplay -f s16le -ar 44100 -ac 2 -probesize 32 -analyzeduration 0 -sync ext "tcp://0.0.0.0:12344?listen"
+```
+
+On the remote controlled machine start streaming audio with:
+```
+ffmpeg  -f pulse -ar 44100 -thread_queue_size 4 -i alsa_output.pci-0000_00_1b.0.analog-stereo.monitor -c:a copy -f s16le tcp://127.0.0.1:12344
+```
+
+There you go!
 
 ## Configuration
 Configuration is kept minimal and you get (arguably) reasonable default settings out of the box. 
