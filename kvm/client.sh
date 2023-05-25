@@ -27,6 +27,9 @@ fi
 
 if [[ $ABORT -eq 1 ]]; then exit; fi
 
+# Launch ffmpeg screen sharing
+bash ~/.config/hprdpvideo.sh &
+
 # Launch KVM client process and store its PID for later termination
 if [[ -z $APPDIR ]]; then
     SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
@@ -58,8 +61,5 @@ if [[ $UI -eq 1 ]]; then
     fi
 fi
 
-# Launch ffmpeg screen sharing
-bash ~/.config/hprdpvideo.sh
-
 # Terminate KVM process when ffmpeg stops and feedback the user
-kill $kvmpid && notify-send "Screen sharing terminated"
+# kill $kvmpid && notify-send "Screen sharing terminated"

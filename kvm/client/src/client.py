@@ -4,6 +4,7 @@ import socket
 from pynput.mouse import Button, Controller as mouseController
 from pynput.keyboard import Key, Controller as kbdController
 import pynput
+import os
 
 HOST = '127.0.0.1' 
 PORT = 12346 
@@ -118,4 +119,17 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     action(pynput.keyboard.KeyCode.from_vk(int(data[2])))
             except Exception as e:
                 print("ERROR:", e)
+
+        elif data[0] == 'video':
+            if data[1] == 'stop':
+                print("killing ffmpeg...")
+                os.system("/usr/bin/pkill -SIGINT -P $(cat /tmp/ffmpeg.pid)")
+                exit(0)
+            elif data[1] == 'start':
+                if "udp" in data[2]:
+                    print("Streaming video to UDP/", data[3])
+                    os.system("/usr/bin/kill -SIGUSR2 $(cat /tmp/ffmpeg.pid)")
+                else:
+                    print("Streaming video over TCP")
+                    os.system("/usr/bin/kill -SIGUSR1 $(cat /tmp/ffmpeg.pid)")
 
