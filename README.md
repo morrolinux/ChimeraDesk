@@ -102,11 +102,14 @@ On `Ubuntu 18.04` You need the latest `libmpv-dev` so add this PPA first: `sudo 
 3. Move to the App directory: `ChimeraDesk/App/sdl/`
 4. And build it with: `gcc -o main main.c $(pkg-config --libs --cflags mpv sdl2 SDL2_ttf) -std=c99`
 
-If everything went fine (no errors) you can even 
-**build the AppImage:**
+If everything went fine (no errors) you can run `./main TCP` (or UDP, IF and only if you are on a local trusted network)
+
+Now you can even **build the AppImage:**
 1. Install AppImage build dependencies:`sudo apt install libfuse2 fuse3 file`
 2. Move to the AppImage folder and build it:`cd AppImage && bash package.sh`
 3. The result will be under `_out`.
+
+You can run the ChimeraDesk AppImage executable with `./ChimeraDesk.Appimage - TCP` (or UDP, IF and only if you are on a local trusted network)
 
 ### Build the App on MacOS
 1. Install `brew`
