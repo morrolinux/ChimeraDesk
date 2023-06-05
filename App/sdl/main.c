@@ -154,16 +154,17 @@ int main(int argc, char *argv[])
         For the audio, please run this command:\n\
         ffplay -f s16le -ar 44100 -ac 2 -probesize 32 -analyzeduration 0 -sync ext \"udp://0.0.0.0:12344\"\n\n");
         url = "udp://0.0.0.0:12345?overrun_nonfatal=1";
-    } else if(argv[1] && (!strcmp(argv[1], "TCP") || !strcmp(argv[1], "tcp"))){
-        printf("Listening for video stream on TCP.\n\
+    } else {
+	printf("You didn't specify video stream protocol, assuming TCP.\
+	\nUsage: ./main {TCP|UDP}\n\n\n\
+	Or: ./ChimeraDesk.AppImage - {TCP|UDP} for the AppImage version (notice the dash before TCP or UDP)\n");
+
+	printf("Listening for video stream on TCP.\n\
         For the audio, please run this command:\n\
         ffplay -f s16le -ar 44100 -ac 2 -probesize 32 -analyzeduration 0 -sync ext \"tcp://0.0.0.0:12344?listen\"\n\n");
         url = "tcp://0.0.0.0:12345?listen";
-    } else {
-        printf("Please specify video stream protocol.\nUsage: ./main {TCP|UDP}\n\n\nOr: ./ChimeraDesk.AppImage - {TCP|UDP} for the AppImage version (notice the dash before TCP or UDP)\n");
-        exit(1);
     }
-
+	
     // Init TCP server
     server_fd = guard(socket(AF_INET, SOCK_STREAM, 0), "could not create TCP listening socket");
     int server_flags = guard(fcntl(server_fd, F_GETFL), "could not get flags on TCP listening socket");
