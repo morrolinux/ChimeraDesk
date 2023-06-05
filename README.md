@@ -60,16 +60,12 @@ You should now be able to see and control the remote screen.
 
 
 ### Streaming desktop audio
-Due to video + audio muxing latency issues, desktop audio needs to be carried over by a separate stream. At this point in time I've not integrated this feature in ChimeraDesk yet, but you can do it indepentently with ffmpeg.
+Due to video + audio muxing latency issues, desktop audio needs to be carried over by a separate stream. At this point in time I've not integrated this feature in the ChimeraDesk App yet, but the KVM already streams the audio on port 12344 and you can listen to it with ffplay.
 
-On the local (controller) machine, start listening with:
+BEFORE running the KVM component on the remote side, start listening on your local (controller) machine with:
+
 ```
 ffplay -f s16le -ar 44100 -ac 2 -probesize 32 -analyzeduration 0 -sync ext "tcp://0.0.0.0:12344?listen"
-```
-
-On the remote controlled machine start streaming audio with:
-```
-ffmpeg  -f pulse -ar 44100 -thread_queue_size 4 -i alsa_output.pci-0000_00_1b.0.analog-stereo.monitor -c:a copy -f s16le tcp://127.0.0.1:12344
 ```
 
 There you go!
