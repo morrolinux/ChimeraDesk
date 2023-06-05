@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
         ffplay -f s16le -ar 44100 -ac 2 -probesize 32 -analyzeduration 0 -sync ext \"tcp://0.0.0.0:12344?listen\"\n\n");
         url = "tcp://0.0.0.0:12345?listen";
     } else {
-        printf("Please specify video stream protocol.\nUsage: ./ChimeraDesk {TCP|UDP}\n");
+        printf("Please specify video stream protocol.\nUsage: ./main {TCP|UDP}\n\n\nOr: ./ChimeraDesk.AppImage - {TCP|UDP} for the AppImage version (notice the dash before TCP or UDP)\n");
         exit(1);
     }
 
