@@ -81,7 +81,7 @@ Plese note that encryption is not provided so SSH (or equivalent encrypted tunne
 ### FFMPEG streaming configuration
 On first launch, the application writes a default ffmpeg command line under `~/.config/hprdpvideo.sh`:
 ```
-echo $BASHPID > /tmp/ffmpeg.pid; ffmpeg -f x11grab -draw_mouse 0 -s $screensize -framerate 30 -i $DISPLAY  -c:v libx264 -preset medium -profile high -pix_fmt yuv420p -tune zerolatency -b:v 2000K -minrate 2000K -maxrate 2000K -bufsize 512k -f mpegts tcp://127.0.0.1:12345
+echo $BASHPID > /tmp/ffmpeg.pid; ffmpeg ... some other stuff ....
 ```
 You are free to change anything at your will, but be sure to keep the `echo $BASHPID > /tmp/ffmpeg.pid;` prefix as it's needed for terminating ffmpeg via UI dialog.
 
