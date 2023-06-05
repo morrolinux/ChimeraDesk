@@ -156,8 +156,8 @@ int main(int argc, char *argv[])
         url = "udp://0.0.0.0:12345?overrun_nonfatal=1";
     } else {
 	printf("You didn't specify video stream protocol, assuming TCP.\
-	\nUsage: ./main {TCP|UDP}\n\n\n\
-	Or: ./ChimeraDesk.AppImage - {TCP|UDP} for the AppImage version (notice the dash before TCP or UDP)\n");
+	\nUsage: ./main {TCP|UDP}\n\
+	Or: ./ChimeraDesk.AppImage - {TCP|UDP} for the AppImage version (notice the dash before TCP/UDP)\n\n");
 
 	printf("Listening for video stream on TCP.\n\
         For the audio, please run this command:\n\
