@@ -104,8 +104,9 @@ On `Ubuntu 18.04` You need the latest `libmpv-dev` so add this PPA first: `sudo 
 
 If everything went fine (no errors) you can even 
 **build the AppImage:**
-1. `cd AppImage && bash package.sh`
-2. The result will be under `_out`.
+1. Install AppImage build dependencies:`sudo apt install libfuse2 fuse3 file`
+2. Move to the AppImage folder and build it:`cd AppImage && bash package.sh`
+3. The result will be under `_out`.
 
 ### Build the App on MacOS
 1. Install `brew`
